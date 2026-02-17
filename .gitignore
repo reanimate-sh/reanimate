@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# pnpm
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+*.pem
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Convex generated files
+convex/_generated/
+
+# ---- apps/web (Next.js) ----
+
+# Build output
+apps/web/.next/
+apps/web/out/
+
+# Next.js generated types
+apps/web/next-env.d.ts
+
+# Vercel
+apps/web/.vercel
+
+# Clerk configuration (can contain secrets)
+apps/web/.clerk/
+
+# Test coverage
+apps/web/coverage/

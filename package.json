@@ -1,0 +1,23 @@
+{
+  "name": "reanimate",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:backend dev:web",
+    "dev:backend": "convex dev",
+    "dev:web": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint"
+  },
+  "devDependencies": {
+    "convex": "^1.31.7",
+    "npm-run-all2": "^8.0.4",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@tailwindcss/oxide"
+    ]
+  }
+}
