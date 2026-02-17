@@ -41,3 +41,11 @@ apps/web/.clerk/
 
 # Test coverage
 apps/web/coverage/
+
+
+#agent configs
+.claude
+.opencode
+.ideavo
+.mcp.json
+.cursor

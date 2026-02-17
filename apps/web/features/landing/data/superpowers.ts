@@ -8,7 +8,7 @@ export const STEPS = [
     activeCard: "Color Grade",
   },
   {
-    prompt: "Add captions in English.",
+    prompt: "Add cinematic captions.",
     activeCard: "Captions",
   },
   {
@@ -25,26 +25,29 @@ export const SEARCH_STEPS = [
   {
     query: "audience laughs",
     results: [
-      { name: "IMG_4829.mov", time: "02:14", active: false },
-      { name: "Audience_Laugh.mp4", time: "04:12", active: true },
-      { name: "IMG_4831.mov", time: "01:05", active: false },
+      { name: "IMG_4829.mov", time: "02:14" },
+      { name: "Audience_Laugh.mp4", time: "04:12" },
+      { name: "IMG_4831.mov", time: "01:05" },
     ],
+    activeResult: 1,
   },
   {
     query: "car horn",
     results: [
-      { name: "IMG_4829.mov", time: "02:14", active: false },
-      { name: "Traffic_Horn.wav", time: "01:05", active: true },
-      { name: "IMG_4830.mov", time: "04:12", active: false },
+      { name: "IMG_4829.mov", time: "02:14" },
+      { name: "IMG_4830.mov", time: "04:12" },
+      { name: "Traffic_Horn.wav", time: "01:05" },
     ],
+    activeResult: 2,
   },
   {
-    query: "crowd cheering",
+    query: "door slam",
     results: [
-      { name: "Crowd_Cheer.mp4", time: "03:22", active: true },
-      { name: "IMG_4830.mov", time: "04:12", active: false },
-      { name: "IMG_4831.mov", time: "01:05", active: false },
+      { name: "Door_Slam_Reverb.mp3", time: "02:14" },
+      { name: "IMG_4830.mov", time: "04:12" },
+      { name: "IMG_4831.mov", time: "01:05" },
     ],
+    activeResult: 0,
   },
 ];
 

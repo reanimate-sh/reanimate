@@ -86,6 +86,77 @@ html {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
+@keyframes collabSelection {
+  0%,
+  18%,
+  82%,
+  100% {
+    width: 20%;
+  }
+  50% {
+    width: 33.333%;
+  }
+}
+
+@keyframes collabAlex {
+  0%,
+  18%,
+  82%,
+  100% {
+    transform: translateX(240px) translateY(140px);
+  }
+  50% {
+    transform: translateX(200px) translateY(40px);
+  }
+}
+
+@keyframes collabToast {
+  0%,
+  10%,
+  90%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  22%,
+  78% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.collab-selection {
+  width: 20%;
+  animation: collabSelection 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.collab-alex {
+  transform: translateX(240px) translateY(140px);
+  animation: collabAlex 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.collab-toast {
+  opacity: 1;
+  animation: collabToast 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes voiceoverPulse {
+  from {
+    height: 4px;
+    opacity: 0.3;
+  }
+  to {
+    height: var(--voice-peak, 16px);
+    opacity: 1;
+  }
+}
+
+.voiceover-pulse {
+  height: 4px;
+  opacity: 1;
+  animation: voiceoverPulse 0.5s ease-in-out infinite alternate;
+}
+
 /* Logo marquee */
 @keyframes marquee {
   0% { transform: translateX(0); }
@@ -119,6 +190,13 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .logo-marquee-track {
+    animation: none;
+  }
+
+  .collab-selection,
+  .collab-alex,
+  .collab-toast,
+  .voiceover-pulse {
     animation: none;
   }
 }
