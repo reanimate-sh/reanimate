@@ -3,6 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Geist } from "next/font/google";
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { PlayIcon } from "./icons/PlayIcon";
 import { ArrowRightIcon } from "./icons/ArrowRightIcon";
@@ -14,6 +20,51 @@ const geist = Geist({
 
 const TOTAL_HERO_FRAMES = 120;
 const TIMELINE_PROGRESS_OFFSET = 0.0194;
+const EASE_IN_OUT: [number, number, number, number] = [0.42, 0, 0.58, 1];
+
+const appMockupVariants = {
+  hidden: {
+    opacity: 0,
+    y: 100,
+    transformPerspective: 1000,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transformPerspective: 1000,
+    transition: {
+      delay: 0,
+      ease: EASE_IN_OUT,
+      staggerChildren: 0.4,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const panelVariants = {
+  hidden: {
+    opacity: 0,
+    y: 40,
+    scale: 0.9,
+    rotateX: -10,
+    transformPerspective: 1000,
+    filter: "blur(8px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    rotateX: 0,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring" as const,
+      stiffness: 60,
+      damping: 12,
+      mass: 1.1,
+      bounce: 0.2,
+    },
+  },
+};
 
 const getHeroFrameSrc = (frame: number) =>
   `https://www.usecardboard.com/marketing/hero/frames_${frame.toString().padStart(5, "0")}.webp`;
@@ -21,7 +72,76 @@ const getHeroFrameSrc = (frame: number) =>
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-const AppMockup = () => {
+const TimelineTrackRow = ({ name }: { name: string }) => (
+  <div className="group flex h-12 items-center justify-between border-b border-white/5 bg-black/30 px-3 transition-colors hover:bg-white/5">
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-medium text-zinc-300">{name}</span>
+    </div>
+    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+      <button className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="size-3.5"
+        >
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </svg>
+      </button>
+      <button className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="size-3.5"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path d="M3 12h3" />
+          <path d="M18 12h3" />
+          <path d="M12 3v3" />
+          <path d="M12 18v3" />
+        </svg>
+      </button>
+      <button className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="size-3.5"
+        >
+          <path d="M6 18 18 6" />
+          <path d="M6 6h12v12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+);
+
+type AppMockupProps = {
+  loading?: boolean;
+  onFramesLoaded?: () => void;
+};
+
+const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const preloadedFramesRef = useRef<HTMLImageElement[]>([]);
@@ -31,10 +151,36 @@ const AppMockup = () => {
     return 1;
   });
   const [framesReady, setFramesReady] = useState(false);
-  const [playheadLeftPercent, setPlayheadLeftPercent] = useState(-25);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const adjustedScrollProgress = useTransform(scrollYProgress, (latest) =>
+    clamp(latest + TIMELINE_PROGRESS_OFFSET, 0, 1),
+  );
+
+  const playheadLeft = useTransform(adjustedScrollProgress, [0, 0.5], ["-25%", "55%"]);
+
+  useMotionValueEvent(adjustedScrollProgress, "change", (latest) => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return;
+    }
+
+    const nextFrame = Math.min(
+      Math.max(Math.floor(119 * Math.min(2 * latest, 1)) + 1, 1),
+      TOTAL_HERO_FRAMES,
+    );
+
+    setFrameIndex((previous) => (previous === nextFrame ? previous : nextFrame));
+  });
 
   useEffect(() => {
-    if (window.innerWidth < 768) return;
+    if (window.innerWidth < 768) {
+      onFramesLoaded?.();
+      return;
+    }
 
     let loadedFrameCount = 0;
     const frames: HTMLImageElement[] = [];
@@ -46,6 +192,7 @@ const AppMockup = () => {
         loadedFrameCount += 1;
         if (loadedFrameCount === TOTAL_HERO_FRAMES) {
           setFramesReady(true);
+          onFramesLoaded?.();
         }
       };
       frames.push(frame);
@@ -56,7 +203,7 @@ const AppMockup = () => {
     return () => {
       preloadedFramesRef.current = [];
     };
-  }, []);
+  }, [onFramesLoaded]);
 
   useEffect(() => {
     if (!framesReady) return;
@@ -73,58 +220,13 @@ const AppMockup = () => {
     context.drawImage(frame, 0, 0);
   }, [frameIndex, framesReady]);
 
-  useEffect(() => {
-    const updateFromScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const rect = container.getBoundingClientRect();
-      const progress = clamp(
-        (window.innerHeight - rect.top) / (window.innerHeight + rect.height),
-        0,
-        1,
-      );
-      const adjustedProgress = clamp(progress + TIMELINE_PROGRESS_OFFSET, 0, 1);
-
-      if (window.innerWidth >= 768) {
-        const nextFrame = Math.min(
-          Math.max(Math.floor(119 * Math.min(2 * adjustedProgress, 1)) + 1, 1),
-          TOTAL_HERO_FRAMES,
-        );
-        setFrameIndex((previous) =>
-          previous === nextFrame ? previous : nextFrame,
-        );
-      }
-
-      const nextPlayheadLeftPercent =
-        -25 + clamp(adjustedProgress / 0.5, 0, 1) * 80;
-      setPlayheadLeftPercent(nextPlayheadLeftPercent);
-    };
-
-    let rafId = 0;
-    const onScrollOrResize = () => {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(() => {
-        rafId = 0;
-        updateFromScroll();
-      });
-    };
-
-    updateFromScroll();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
-
-    return () => {
-      if (rafId) window.cancelAnimationFrame(rafId);
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
-    };
-  }, []);
-
   return (
-    <div
+    <motion.div
       ref={containerRef}
       className={`${geist.variable} [--font-sans:var(--font-geist)] relative z-20 flex h-[460px] w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/40 font-sans text-xs text-zinc-400 shadow-2xl shadow-black/50 backdrop-blur-xl select-none md:h-[720px]`}
+      variants={appMockupVariants}
+      initial="hidden"
+      animate={loading ? "hidden" : "visible"}
       style={{ perspective: "1200px" }}
     >
       {/* Glass overlay effects */}
@@ -134,7 +236,10 @@ const AppMockup = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
-        <div className="hidden h-full shrink-0 origin-top border-r border-white/10 md:flex">
+        <motion.div
+          className="hidden h-full shrink-0 origin-top border-r border-white/10 md:flex"
+          variants={panelVariants}
+        >
           {/* Icon rail */}
           <div className="flex w-12 flex-col items-center gap-2 border-r border-white/10 bg-black/30 py-2">
             <div className="relative flex items-center justify-center">
@@ -384,7 +489,7 @@ const AppMockup = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Canvas Area */}
         <div className="relative flex flex-1 origin-center flex-col overflow-hidden bg-black/20">
@@ -426,7 +531,10 @@ const AppMockup = () => {
         </div>
 
         {/* Right AI Director Panel */}
-        <div className="hidden w-[340px] shrink-0 origin-top flex-col border-l border-white/10 bg-black/30 xl:flex">
+        <motion.div
+          className="hidden w-[340px] shrink-0 origin-top flex-col border-l border-white/10 bg-black/30 xl:flex"
+          variants={panelVariants}
+        >
           <div className="relative flex h-12 shrink-0 items-center justify-between border-b border-white/10 px-4">
             <h5 className="text-sm font-normal text-zinc-500">Director</h5>
             <div className="flex items-center justify-end gap-2">
@@ -513,10 +621,13 @@ const AppMockup = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="flex h-[160px] shrink-0 origin-bottom flex-col border-t border-white/10 bg-black/30 md:h-[240px]">
+      <motion.div
+        className="flex h-[160px] shrink-0 origin-bottom flex-col border-t border-white/10 bg-black/30 md:h-[240px]"
+        variants={panelVariants}
+      >
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
           <div className="flex flex-1 items-center gap-2">
             <div className="flex items-center gap-1 rounded-md border border-white/10 p-0.5">
@@ -699,16 +810,9 @@ const AppMockup = () => {
               00:01:15:00
             </div>
             <div className="overflow-y-auto">
-              {"B-roll Main Music".split(" ").map((trackName) => (
-                <div
-                  key={trackName}
-                  className="group flex h-12 items-center justify-between border-b border-white/5 bg-black/30 px-3 transition-colors hover:bg-white/5"
-                >
-                  <span className="text-sm font-medium text-zinc-300">
-                    {trackName}
-                  </span>
-                </div>
-              ))}
+              <TimelineTrackRow name="B-roll" />
+              <TimelineTrackRow name="Main" />
+              <TimelineTrackRow name="Music" />
             </div>
           </div>
 
@@ -725,12 +829,12 @@ const AppMockup = () => {
             </div>
 
             <div className="relative overflow-y-auto">
-              <div
+              <motion.div
                 className="absolute top-0 bottom-0 z-20 flex w-px flex-col items-center bg-white"
-                style={{ left: `${playheadLeftPercent}%` }}
+                style={{ left: playheadLeft }}
               >
                 <div className="-mt-1.5 h-3 w-3 rotate-45 rounded-sm bg-white" />
-              </div>
+              </motion.div>
 
               <div className="relative h-12 border-b border-white/5 px-2">
                 <div className="absolute top-0 bottom-0 left-[5%] w-[15%] overflow-hidden rounded-md border border-white/20 bg-white/10">
@@ -768,16 +872,22 @@ const AppMockup = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
 type HeroSectionProps = {
   onWatchVideo: () => void;
+  loading?: boolean;
+  onFramesLoaded?: () => void;
 };
 
-export const HeroSection = ({ onWatchVideo }: HeroSectionProps) => (
+export const HeroSection = ({
+  onWatchVideo,
+  loading = false,
+  onFramesLoaded,
+}: HeroSectionProps) => (
   <section className="relative z-10 flex min-h-screen w-full flex-col items-center justify-start px-4 pt-36 sm:px-6 lg:pt-42">
     {/* Background Video */}
     <div
@@ -840,7 +950,7 @@ export const HeroSection = ({ onWatchVideo }: HeroSectionProps) => (
 
     {/* App Mockup */}
     <div className="relative z-10 mt-16 w-full max-w-[1400px] px-4 sm:px-6">
-      <AppMockup />
+      <AppMockup loading={loading} onFramesLoaded={onFramesLoaded} />
     </div>
   </section>
 );

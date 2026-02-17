@@ -1,30 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useState } from "react";
 import { CardboardLogo } from "./icons/CardboardLogo";
 
-export const Header = () => {
+type HeaderProps = {
+  showLogo?: boolean;
+};
+
+export const Header = ({ showLogo = true }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const { scrollY } = useScroll();
 
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 0);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const nextScrolledState = latest > 60;
+    if (nextScrolledState !== isScrolled) {
+      setIsScrolled(nextScrolledState);
+    }
+  });
 
-  const shellClasses = isScrolled
-    ? "bg-white/8 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
-    : "bg-transparent backdrop-blur-0 shadow-none";
+  const shellStyles = {
+    backgroundColor: isScrolled ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)",
+    backdropFilter: isScrolled ? "blur(16px)" : "blur(0px)",
+    boxShadow: isScrolled
+      ? "0 0 0 1px rgba(255, 255, 255, 0.1), 0 8px 32px -8px rgba(0, 0, 0, 0.3)"
+      : "none",
+  };
+
+  const shouldUseSharedLayoutLogo = pathname === "/";
 
   return (
-    <header className="fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center justify-between px-4 py-4 w-[calc(100%-3rem)] max-w-[2000px] md:w-[calc(100%-6rem)] xl:w-[calc(100%-12rem)]">
-      <div className={`flex items-center gap-8 rounded-lg px-4 py-3 transition-all duration-200 ${shellClasses}`}>
+    <motion.header
+      className="fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center justify-between px-4 py-4 w-[calc(100%-3rem)] max-w-[2000px] md:w-[calc(100%-6rem)] xl:w-[calc(100%-12rem)]"
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: showLogo ? 1 : 0, pointerEvents: showLogo ? "auto" : "none" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
+      <motion.div
+        className="flex items-center gap-8 rounded-lg px-4 py-3"
+        animate={shellStyles}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
         <Link href="/" className="flex cursor-pointer items-center gap-3">
-          <div className="relative h-6 w-6 md:h-7 md:w-7">
-            <CardboardLogo />
-          </div>
+          {showLogo && (
+            <motion.div
+              layoutId={shouldUseSharedLayoutLogo ? "cardboard-logo" : undefined}
+              className="relative h-6 w-6 md:h-7 md:w-7"
+            >
+              <CardboardLogo />
+            </motion.div>
+          )}
           <span className="font-landing -ml-px hidden text-lg font-normal tracking-tight text-white sm:block">
             Cardboard
           </span>
@@ -37,8 +65,12 @@ export const Header = () => {
             Changelog
           </Link>
         </nav>
-      </div>
-      <div className={`flex items-center rounded-lg px-3 py-3 transition-all duration-200 ${shellClasses}`}>
+      </motion.div>
+      <motion.div
+        className="flex items-center rounded-lg px-3 py-3"
+        animate={shellStyles}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
         <div className="flex items-center gap-2">
           <Link
             href="/login"
@@ -53,7 +85,7 @@ export const Header = () => {
             Sign up
           </Link>
         </div>
-      </div>
-    </header>
+      </motion.div>
+    </motion.header>
   );
 };

@@ -1,11 +1,32 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { CUSTOMERS } from "../data/superpowers";
 
 export const CustomerLogosSection = () => (
-  <div className="relative z-10 mt-24 w-full">
-    <p className="font-landing text-center text-sm font-medium tracking-wide text-neutral-500 uppercase">Used by humans at</p>
-    <div className="relative mt-2 mb-8 h-[100px] w-full overflow-hidden logo-marquee-fade">
+  <motion.div
+    className="relative z-10 mt-24 w-full"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-120px" }}
+    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+  >
+    <motion.p
+      className="font-landing text-center text-sm font-medium tracking-wide text-neutral-500 uppercase"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.05, duration: 0.45 }}
+    >
+      Used by humans at
+    </motion.p>
+    <motion.div
+      className="relative mt-2 mb-8 h-[100px] w-full overflow-hidden logo-marquee-fade"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.12, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="logo-marquee-track">
         {/* First copy */}
         {CUSTOMERS.map((company) => (
@@ -51,6 +72,6 @@ export const CustomerLogosSection = () => (
           </a>
         ))}
       </div>
-    </div>
-  </div>
+    </motion.div>
+  </motion.div>
 );

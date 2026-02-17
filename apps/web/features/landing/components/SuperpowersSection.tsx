@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { STEPS, SEARCH_STEPS } from "../data/superpowers";
 
 const COLOR_MAP: Record<string, string> = {
@@ -246,7 +247,13 @@ const DescribeChangeCard = () => {
   }, [phase]);
 
   return (
-    <div className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8 md:col-span-2 md:p-8">
+    <motion.div
+      className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8 md:col-span-2 md:p-8"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="flex h-full flex-col">
         <div className="relative z-10 mb-16 flex max-w-3xl flex-row items-start gap-4">
           <div className="mt-1 flex h-6 w-6 items-center justify-center">
@@ -344,13 +351,19 @@ const DescribeChangeCard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const CollaborationCard = () => {
   return (
-    <div className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8">
+    <motion.div
+      className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
+    >
       <div className="flex h-full flex-col">
         <div className="relative z-10 mb-8 flex flex-row items-start gap-4">
           <div className="mt-1 flex h-6 w-6 items-center justify-center">
@@ -411,7 +424,7 @@ const CollaborationCard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -456,7 +469,13 @@ const FindAnythingCard = () => {
   const activeResult = phase === "results" ? searchStep.activeResult : -1;
 
   return (
-    <div className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8">
+    <motion.div
+      className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
+    >
       <div className="flex h-full flex-col">
         <div className="relative z-10 mb-8 flex flex-row items-start gap-4">
           <div className="mt-1 flex h-6 w-6 items-center justify-center">
@@ -533,21 +552,39 @@ const FindAnythingCard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 export const SuperpowersSection = () => (
   <section className="relative z-10 mt-24 w-full flex-col items-center py-32">
     <div className="mx-auto w-full max-w-[1400px] px-6 lg:px-8">
-      <div className="mb-16 flex flex-col items-start justify-start text-left">
-        <h2 className="font-landing max-w-4xl text-4xl leading-[1.05] font-medium tracking-tight text-white md:text-7xl">
+      <motion.div
+        className="mb-16 flex flex-col items-start justify-start text-left"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-120px" }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <motion.h2
+          className="font-landing max-w-4xl text-4xl leading-[1.05] font-medium tracking-tight text-white md:text-7xl"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.03, duration: 0.45 }}
+        >
           An editor with superpowers.
-        </h2>
-        <p className="mt-6 max-w-4xl text-lg leading-relaxed text-zinc-400">
+        </motion.h2>
+        <motion.p
+          className="mt-6 max-w-4xl text-lg leading-relaxed text-zinc-400"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1, duration: 0.45 }}
+        >
           A full suite of AI features that speed up the boring parts, without taking control away.
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <DescribeChangeCard />

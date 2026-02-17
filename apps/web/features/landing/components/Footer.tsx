@@ -1,12 +1,25 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { CardboardLogo } from "./icons/CardboardLogo";
 
 export const Footer = () => (
-  <footer className="relative z-10 w-full border-t border-white/10 bg-black/20 py-20">
+  <motion.footer
+    className="relative z-10 w-full border-t border-white/10 bg-black/20 py-20"
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.5 }}
+  >
     <div className="mx-auto w-[calc(100vw-3rem)] max-w-[2000px] md:w-[calc(100vw-6rem)] xl:w-[calc(100vw-12rem)]">
-      <div className="mb-8 grid grid-cols-1 gap-8 px-8 md:grid-cols-5 pb-12">
+      <motion.div
+        className="mb-8 grid grid-cols-1 gap-8 px-8 md:grid-cols-5 pb-12"
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      >
         {/* Brand */}
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="mb-4 flex items-center gap-3">
@@ -79,9 +92,15 @@ export const Footer = () => (
             </li>
           </ul>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+      <motion.div
+        className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row"
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.08, duration: 0.45 }}
+      >
         <p className="text-sm text-neutral-500">
           © 2026 Cardboard Inc. All rights reserved.
         </p>
@@ -89,7 +108,7 @@ export const Footer = () => (
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           All systems operational
         </div>
-      </div>
+      </motion.div>
     </div>
-  </footer>
+  </motion.footer>
 );
