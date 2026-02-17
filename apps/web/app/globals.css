@@ -66,7 +66,7 @@ body {
 
 /* Smooth scroll */
 html {
-  font-size: 89%;
+  font-size: 81.25%;
   scroll-behavior: smooth;
 }
 

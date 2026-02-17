@@ -4,7 +4,6 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
-import { CustomerLogosSection } from "./components/CustomerLogosSection";
 import { FeaturesCarouselSection } from "./components/FeaturesCarouselSection";
 import { SuperpowersSection } from "./components/SuperpowersSection";
 import { CtaSection } from "./components/CtaSection";
@@ -33,7 +32,6 @@ export const LandingPage = () => {
         onFramesLoaded={() => setHeroFramesLoaded(true)}
         onWatchVideo={() => setIsVideoOpen(true)}
       />
-      <CustomerLogosSection />
       <FeaturesCarouselSection />
       <SuperpowersSection />
       <CtaSection />
