@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@reanimate/ui/*": [
+        "../../packages/ui/src/*"
       ]
     }
   },
