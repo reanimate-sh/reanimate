@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { CardboardLogo } from "./icons/CardboardLogo";
+import { ReanimateLogo } from "./icons/ReanimateLogo";
 
 export const Footer = () => (
   <motion.footer
@@ -23,10 +23,10 @@ export const Footer = () => (
         <div className="col-span-2 flex flex-col gap-6 lg:col-span-4">
           <Link href="/" className="flex w-fit items-center gap-3 transition-opacity hover:opacity-80">
             <div className="size-9">
-              <CardboardLogo />
+              <ReanimateLogo />
             </div>
             <h3 className="font-landing text-2xl font-normal tracking-tight text-white">
-              Cardboard
+              Reanimate
             </h3>
           </Link>
           <p className="max-w-xs text-base leading-relaxed font-thin text-white/70">
@@ -34,7 +34,7 @@ export const Footer = () => (
           </p>
           <div className="flex items-center gap-4">
             <Link
-              href="https://x.com/usecardboard"
+              href="https://x.com/reanimate"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
@@ -46,7 +46,7 @@ export const Footer = () => (
               </svg>
             </Link>
             <Link
-              href="https://www.linkedin.com/company/cardboardinc"
+              href="https://www.linkedin.com/company/reanimate"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
@@ -99,7 +99,7 @@ export const Footer = () => (
           <h4 className="font-landing mb-6 text-base font-normal tracking-wide text-white">Company</h4>
           <ul className="space-y-4">
             <li>
-              <Link href="mailto:founders@usecardboard.com" className="block w-fit font-thin text-neutral-500 transition-colors hover:text-white">
+              <Link href="mailto:contact@reanimate.sh" className="block w-fit font-thin text-neutral-500 transition-colors hover:text-white">
                 Contact
               </Link>
             </li>
@@ -115,7 +115,7 @@ export const Footer = () => (
         transition={{ delay: 0.1, duration: 0.45 }}
       >
         <p className="text-sm font-medium text-neutral-600">
-          © 2026 Cardboard Inc. All rights reserved.
+          © 2026 Reanimate Inc. All rights reserved.
         </p>
         <div className="flex gap-8">
           <span className="flex items-center gap-2 rounded-full border border-white/5 bg-white/5 px-3 py-1">

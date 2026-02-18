@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { SignIn, SignUp } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { CardboardLogo } from "@/features/landing/components/icons/CardboardLogo";
+import { ReanimateLogo } from "@/features/landing/components/icons/ReanimateLogo";
 
 type AuthMode = "login" | "signup";
 
@@ -30,9 +30,9 @@ const AUTH_CONTENT: Record<AuthMode, AuthContent> = {
 const BrandLink = ({ mobile = false }: { mobile?: boolean }) => (
   <Link href="/" className="flex items-center gap-3">
     <div className="size-10 text-white">
-      <CardboardLogo />
+      <ReanimateLogo />
     </div>
-    <h3 className={`font-landing font-normal text-white ${mobile ? "text-2xl" : "text-2xl"}`}>Cardboard</h3>
+    <h3 className={`font-landing font-normal text-white ${mobile ? "text-2xl" : "text-2xl"}`}>Reanimate</h3>
   </Link>
 );
 
@@ -40,10 +40,6 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
   const content = AUTH_CONTENT[mode];
   const clerkAppearance = {
     baseTheme: dark,
-    layout: {
-      logoImageUrl: "/logos/cardboard-logo-no-bg.png",
-      logoPlacement: "inside" as const,
-    },
     variables: {
       fontSize: "1rem",
       fontWeight: { normal: 300, medium: 400, semibold: 500, bold: 600 },
@@ -67,7 +63,7 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
     <div className="font-landing relative flex min-h-screen w-full flex-col overflow-x-hidden bg-black text-white">
       <div className="fixed inset-0 z-0">
         <video autoPlay loop muted playsInline className="h-full w-full object-cover">
-          <source src="https://assets.usecardboard.com/landing/hero-720.mp4" type="video/mp4" />
+          <source src="/videos/hero-720.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/50" />
       </div>

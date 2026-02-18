@@ -43,7 +43,7 @@ export const PLANS: Plan[] = [
     name: "Teams",
     description: "Advanced features for collaborative video teams.",
     ctaLabel: "Contact us",
-    ctaHref: "mailto:founders@usecardboard.com",
+    ctaHref: "mailto:contact@reanimate.sh",
     customPrice: "Custom",
     customSubtext: "For organizations with specific needs",
     accent: "teams",
@@ -79,6 +79,6 @@ export const FAQS: FaqItem[] = [
   {
     question: "Have another question?",
     answer:
-      "If you have any other questions, feel free to reach out to us at founders@usecardboard.com or book a call. We're here to help!",
+      "If you have any other questions, feel free to reach out to us at contact@reanimate.sh or book a call. We're here to help!",
   },
 ];

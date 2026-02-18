@@ -13,7 +13,7 @@ export const CustomerLogosSection = () => (
         {CUSTOMERS.map((company) => (
           <a
             key={`a-${company.slug}`}
-            href={`${company.url}?utm_source=usecardboard.com&utm_medium=website&utm_campaign=customer_logos`}
+            href={`${company.url}?utm_source=reanimate.sh&utm_medium=website&utm_campaign=customer_logos`}
             target="_blank"
             rel="noreferrer noopener"
             aria-label={company.name}
@@ -34,7 +34,7 @@ export const CustomerLogosSection = () => (
         {CUSTOMERS.map((company) => (
           <a
             key={`b-${company.slug}`}
-            href={`${company.url}?utm_source=usecardboard.com&utm_medium=website&utm_campaign=customer_logos`}
+            href={`${company.url}?utm_source=reanimate.sh&utm_medium=website&utm_campaign=customer_logos`}
             target="_blank"
             rel="noreferrer noopener"
             aria-label={company.name}

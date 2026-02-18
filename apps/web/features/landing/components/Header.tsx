@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useState } from "react";
-import { CardboardLogo } from "./icons/CardboardLogo";
+import { ReanimateLogo } from "./icons/ReanimateLogo";
 
 type HeaderProps = {
   showLogo?: boolean;
@@ -47,14 +47,14 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
         <Link href="/" className="flex cursor-pointer items-center gap-3">
           {showLogo && (
             <motion.div
-              layoutId={shouldUseSharedLayoutLogo ? "cardboard-logo" : undefined}
+              layoutId={shouldUseSharedLayoutLogo ? "brand-logo" : undefined}
               className="relative h-6 w-6 md:h-7 md:w-7"
             >
-              <CardboardLogo />
+              <ReanimateLogo />
             </motion.div>
           )}
           <span className="font-landing -ml-px hidden text-xl font-thin tracking-tight text-white sm:block">
-            Cardboard
+            Reanimate
           </span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex">

@@ -20,7 +20,7 @@ export const CtaSection = () => (
         viewport={{ once: true }}
         transition={{ delay: 0.04, duration: 0.45 }}
       >
-        Start using Cardboard today.
+        Start using Reanimate today.
       </motion.h2>
       <motion.p
         className="text-lg text-neutral-400 mb-10"

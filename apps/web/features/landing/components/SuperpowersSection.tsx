@@ -268,7 +268,7 @@ const DescribeChangeCard = () => {
           <div className="flex flex-col">
             <h3 className="text-xl font-medium tracking-tight text-white">Describe the change</h3>
             <p className="mt-2 text-lg leading-relaxed text-zinc-400">
-              Cardboard understands the semantic meaning of your request and maps it to complex timeline operations automatically.
+              Reanimate understands the semantic meaning of your request and maps it to complex timeline operations automatically.
             </p>
           </div>
         </div>

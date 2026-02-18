@@ -37,7 +37,7 @@ export const PricingPage = () => {
         transition={{ duration: 0.45, ease: "easeInOut" }}
       >
         <video autoPlay muted playsInline loop className="h-full w-full object-cover object-center opacity-40">
-          <source src="https://assets.usecardboard.com/landing/hero-720.mp4" type="video/mp4" />
+          <source src="/videos/hero-720.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
       </motion.div>
