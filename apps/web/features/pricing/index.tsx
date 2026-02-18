@@ -25,7 +25,7 @@ export const PricingPage = () => {
   };
 
   return (
-    <div className="font-landing relative flex min-h-screen flex-col items-center bg-black">
+    <div className="font-landing relative z-10 flex min-h-screen w-full flex-col items-center bg-black">
       <motion.div
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
         style={{
@@ -90,7 +90,7 @@ export const PricingPage = () => {
         </div>
       </main>
 
-      <div className="z-10 mt-auto w-full">
+      <div className="relative z-10 w-full">
         <Footer />
       </div>
     </div>

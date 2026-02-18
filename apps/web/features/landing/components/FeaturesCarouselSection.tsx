@@ -16,7 +16,7 @@ export const FeaturesCarouselSection = () => (
         <h2 className="font-landing text-4xl leading-[1.01] font-medium tracking-[-1.5px] text-white md:text-7xl">
           First cut to final cut. No grind.
         </h2>
-        <p className="mt-6 text-lg text-neutral-400">
+        <p className="mt-6 text-lg text-white/70 text-thin">
           Get a strong first pass in minutes, then refine it like a real editor. Tight pacing, clean captions, share-ready exports.
         </p>
       </div>

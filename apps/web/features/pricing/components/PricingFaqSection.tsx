@@ -39,7 +39,7 @@ export const PricingFaqSection = ({
               onClick={() => onToggleQuestion(index)}
               aria-expanded={isOpen}
             >
-              <h4 className="flex-1 text-lg font-medium text-white">{faq.question}</h4>
+              <h4 className="flex-1 text-lg font-normal text-white">{faq.question}</h4>
               <ChevronDown
                 className={`size-6 shrink-0 text-neutral-400 transition-transform duration-300 ${
                   isOpen ? "rotate-180" : ""
@@ -57,7 +57,7 @@ export const PricingFaqSection = ({
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <div className="px-7 pb-7 text-base leading-relaxed text-neutral-400">{faq.answer}</div>
+                  <div className="px-7 pb-7 font-thin leading-relaxed text-white/70">{faq.answer}</div>
                 </motion.div>
               )}
             </AnimatePresence>

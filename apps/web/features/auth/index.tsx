@@ -32,7 +32,7 @@ const BrandLink = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="size-10 text-white">
       <CardboardLogo />
     </div>
-    <h3 className={`font-landing font-medium text-white ${mobile ? "text-2xl" : "text-xl"}`}>Cardboard</h3>
+    <h3 className={`font-landing font-normal text-white ${mobile ? "text-2xl" : "text-2xl"}`}>Cardboard</h3>
   </Link>
 );
 
@@ -76,9 +76,9 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
         <div className="hidden w-full flex-col justify-between p-8 md:flex md:w-1/2 md:p-16">
           <BrandLink />
 
-          <div className="max-w-md">
-            <h1 className="font-landing text-4xl leading-tight font-medium text-white md:text-5xl">{content.heroTitle}</h1>
-            <p className="font-landing mt-4 text-lg font-light text-zinc-200">{content.heroSubtitle}</p>
+          <div className="max-w-lg">
+            <h1 className="font-landing text-4xl leading-tight font-medium text-white md:text-6xl">{content.heroTitle}</h1>
+            <p className="font-landing mt-4 text-xl font-light text-zinc-200">{content.heroSubtitle}</p>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
           <div className="absolute top-10 right-0 left-0 flex flex-col items-center gap-4 text-center md:hidden">
             <BrandLink mobile />
             <div className="max-w-xs rounded-full border border-white/10 bg-black/30 px-4 py-1.5 backdrop-blur-md">
-              <p className="text-xs font-medium text-zinc-300">Desktop recommended for editing</p>
+              <p className="text-sm font-medium text-zinc-300">Desktop recommended for editing</p>
             </div>
           </div>
 

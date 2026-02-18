@@ -56,7 +56,7 @@ export const HeroSection = ({
     </h1>
 
     {/* Hero Subtitle */}
-    <p className="relative z-10 mt-6 max-w-3xl text-center text-lg font-normal tracking-[-0.5px] text-white/90 md:text-xl">
+    <p className="relative z-10 mt-6 max-w-3xl text-center text-lg font-thin tracking-[-0.5px] text-white/70 md:text-xl">
       Go from raw footage to a clean, publish-ready edit in minutes.
     </p>
 

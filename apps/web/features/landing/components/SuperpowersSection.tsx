@@ -576,7 +576,7 @@ export const SuperpowersSection = () => (
           An editor with superpowers.
         </motion.h2>
         <motion.p
-          className="mt-6 max-w-4xl text-lg leading-relaxed text-zinc-400"
+          className="mt-6 max-w-4xl text-lg leading-relaxed text-white/70 text-thin"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
