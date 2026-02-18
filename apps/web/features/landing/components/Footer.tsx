@@ -6,87 +6,100 @@ import { CardboardLogo } from "./icons/CardboardLogo";
 
 export const Footer = () => (
   <motion.footer
-    className="relative z-10 w-full border-t border-white/10 bg-black/20 py-20"
+    className="w-full border-t border-white/5 bg-black pt-20 pb-10"
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
-    viewport={{ once: true, margin: "-80px" }}
-    transition={{ duration: 0.5 }}
+    viewport={{ once: true, margin: "-120px" }}
+    transition={{ duration: 0.45 }}
   >
-    <div className="mx-auto w-[calc(100vw-3rem)] max-w-[2000px] md:w-[calc(100vw-6rem)] xl:w-[calc(100vw-12rem)]">
+    <div className="mx-auto flex flex-col gap-12 md:gap-16 w-[calc(100%-3rem)] max-w-[2000px] md:w-[calc(100%-6rem)] xl:w-[calc(100%-12rem)]">
       <motion.div
-        className="mb-8 grid grid-cols-1 gap-8 px-8 md:grid-cols-5 pb-12"
-        initial={{ opacity: 0, y: 22 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.45, delay: 0.05 }}
       >
-        {/* Brand */}
-        <div className="col-span-1 md:col-span-2">
-          <Link href="/" className="mb-4 flex items-center gap-3">
-            <div className="relative h-6 w-6 md:h-7 md:w-7">
+        <div className="col-span-2 flex flex-col gap-6 lg:col-span-4">
+          <Link href="/" className="flex w-fit items-center gap-3 transition-opacity hover:opacity-80">
+            <div className="size-8">
               <CardboardLogo />
             </div>
-            <span className="font-landing -ml-px text-lg font-normal tracking-tight text-white">
+            <h3 className="font-landing text-xl font-medium tracking-tight text-white">
               Cardboard
-            </span>
+            </h3>
           </Link>
-          <p className="text-sm text-neutral-400 mb-4 max-w-sm">
+          <p className="max-w-xs text-sm leading-relaxed text-neutral-400">
             The agentic video editor that helps you create stunning content 10x faster.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="https://x.com/usecardboard" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-white transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            <Link
+              href="https://x.com/usecardboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
+              aria-label="X (Twitter)"
+            >
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="size-4 text-neutral-400 transition-colors group-hover:text-white">
+                <title>X</title>
+                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
               </svg>
             </Link>
-            <Link href="https://www.linkedin.com/company/cardboardinc" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-white transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            <Link
+              href="https://www.linkedin.com/company/cardboardinc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
+              aria-label="LinkedIn"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 text-neutral-400 transition-colors group-hover:text-white" aria-hidden="true">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect width="4" height="12" x="2" y="9" />
+                <circle cx="4" cy="4" r="2" />
               </svg>
             </Link>
           </div>
         </div>
 
-        {/* Product */}
-        <div>
-          <h4 className="font-medium text-white mb-4">Product</h4>
-          <ul className="space-y-3">
+        <div className="hidden lg:col-span-2 lg:block" />
+
+        <div className="col-span-1 lg:col-span-2">
+          <h4 className="font-landing mb-6 text-sm font-semibold tracking-wide text-white">Product</h4>
+          <ul className="space-y-4">
             <li>
-              <Link href="/pricing" className="text-sm text-neutral-400 hover:text-white transition-colors">
+              <Link href="/pricing" className="block w-fit text-sm text-neutral-500 transition-colors hover:text-white">
                 Pricing
               </Link>
             </li>
             <li>
-              <Link href="/changelog" className="text-sm text-neutral-400 hover:text-white transition-colors">
+              <Link href="/changelog" className="block w-fit text-sm text-neutral-500 transition-colors hover:text-white">
                 Changelog
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Legal */}
-        <div>
-          <h4 className="font-medium text-white mb-4">Legal</h4>
-          <ul className="space-y-3">
+        <div className="col-span-1 lg:col-span-2">
+          <h4 className="font-landing mb-6 text-sm font-semibold tracking-wide text-white">Legal</h4>
+          <ul className="space-y-4">
             <li>
-              <Link href="/privacy" className="text-sm text-neutral-400 hover:text-white transition-colors">
+              <Link href="/privacy" className="block w-fit text-sm text-neutral-500 transition-colors hover:text-white">
                 Privacy
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="text-sm text-neutral-400 hover:text-white transition-colors">
+              <Link href="/terms" className="block w-fit text-sm text-neutral-500 transition-colors hover:text-white">
                 Terms
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Company */}
-        <div>
-          <h4 className="font-medium text-white mb-4">Company</h4>
-          <ul className="space-y-3">
+        <div className="col-span-1 lg:col-span-2">
+          <h4 className="font-landing mb-6 text-sm font-semibold tracking-wide text-white">Company</h4>
+          <ul className="space-y-4">
             <li>
-              <Link href="mailto:founders@usecardboard.com" className="text-sm text-neutral-400 hover:text-white transition-colors">
+              <Link href="mailto:founders@usecardboard.com" className="block w-fit text-sm text-neutral-500 transition-colors hover:text-white">
                 Contact
               </Link>
             </li>
@@ -95,18 +108,23 @@ export const Footer = () => (
       </motion.div>
 
       <motion.div
-        className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row"
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-8 md:flex-row"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.08, duration: 0.45 }}
+        transition={{ delay: 0.1, duration: 0.45 }}
       >
-        <p className="text-sm text-neutral-500">
+        <p className="text-xs font-medium text-neutral-600">
           © 2026 Cardboard Inc. All rights reserved.
         </p>
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          All systems operational
+        <div className="flex gap-8">
+          <span className="flex items-center gap-2 rounded-full border border-white/5 bg-white/5 px-3 py-1">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/50 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="text-xs font-medium text-neutral-400">All systems operational.</span>
+          </span>
         </div>
       </motion.div>
     </div>

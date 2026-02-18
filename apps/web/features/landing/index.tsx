@@ -19,7 +19,7 @@ export const LandingPage = () => {
   const isPageLoading = !logoAnimationComplete || !heroFramesLoaded;
 
   return (
-    <div className="relative z-10 flex w-full max-w-[2000px] flex-col items-center">
+    <div className="font-landing relative z-10 flex w-full flex-col items-center">
       <AnimatePresence>
         {isPageLoading && (
           <LoadingLogoOverlay onComplete={() => setLogoAnimationComplete(true)} />
@@ -35,7 +35,9 @@ export const LandingPage = () => {
       <FeaturesCarouselSection />
       <SuperpowersSection />
       <CtaSection />
-      <Footer />
+      <div className="relative z-10 w-full">
+        <Footer />
+      </div>
     </div>
   );
 };
