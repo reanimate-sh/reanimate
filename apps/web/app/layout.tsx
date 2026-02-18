@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import ConvexClientProvider from "@/components/ConvexClientProvider";
 
 export const metadata: Metadata = {
   title: "Cardboard | Agentic Video Editor",
@@ -23,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="font-sans relative flex min-h-screen flex-col items-center justify-center overflow-x-hidden bg-black text-white">
-        {children}
+        <ClerkProvider dynamic>
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
