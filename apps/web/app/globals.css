@@ -188,6 +188,15 @@ html {
   -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 10%, black 90%, transparent);
 }
 
+.light-rays-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .logo-marquee-track {
     animation: none;
