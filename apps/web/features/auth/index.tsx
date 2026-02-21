@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { SignIn, SignUp } from "@clerk/nextjs";
+import { SignIn, SignUp, Waitlist } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { ReanimateLogo } from "@/features/landing/components/icons/ReanimateLogo";
 
-type AuthMode = "login" | "signup";
+type AuthMode = "login" | "signup" | "waitlist";
 
 type AuthContent = {
   heroTitle: string;
@@ -25,6 +25,10 @@ const AUTH_CONTENT: Record<AuthMode, AuthContent> = {
     heroTitle: "Ready to create?",
     heroSubtitle: "Your browser's about to become a studio.",
   },
+  waitlist: {
+    heroTitle: "Join the waitlist.",
+    heroSubtitle: "Get notified as soon as your early access spot opens.",
+  },
 };
 
 const BrandLink = ({ mobile = false }: { mobile?: boolean }) => (
@@ -38,6 +42,10 @@ const BrandLink = ({ mobile = false }: { mobile?: boolean }) => (
 
 export const AuthPage = ({ mode }: AuthPageProps) => {
   const content = AUTH_CONTENT[mode];
+  const mobileHint =
+    mode === "waitlist"
+      ? "Access is rolling out in waves"
+      : "Desktop recommended for editing";
   const clerkAppearance = {
     baseTheme: dark,
     variables: {
@@ -74,7 +82,7 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
 
           <div className="max-w-lg">
             <h1 className="font-landing text-4xl leading-tight font-medium text-white md:text-6xl">{content.heroTitle}</h1>
-            <p className="font-landing mt-4 text-xl font-light text-zinc-200">{content.heroSubtitle}</p>
+            <p className="font-landing mt-4 text-xl font-light text-zinc-200/75">{content.heroSubtitle}</p>
           </div>
         </div>
 
@@ -82,12 +90,18 @@ export const AuthPage = ({ mode }: AuthPageProps) => {
           <div className="absolute top-10 right-0 left-0 flex flex-col items-center gap-4 text-center md:hidden">
             <BrandLink mobile />
             <div className="max-w-xs rounded-full border border-white/10 bg-black/30 px-4 py-1.5 backdrop-blur-md">
-              <p className="text-sm font-medium text-zinc-300">Desktop recommended for editing</p>
+              <p className="text-sm font-medium text-zinc-300">{mobileHint}</p>
             </div>
           </div>
 
           <div className="flex w-full max-w-md flex-col items-center justify-center rounded-2xl bg-black/50 p-6 backdrop-blur-sm md:bg-transparent md:p-0 md:backdrop-blur-none">
-            {mode === "login" ? <SignIn appearance={clerkAppearance} /> : <SignUp appearance={clerkAppearance} />}
+            {mode === "login" ? (
+              <SignIn appearance={clerkAppearance} />
+            ) : mode === "signup" ? (
+              <SignUp appearance={clerkAppearance} />
+            ) : (
+              <Waitlist appearance={clerkAppearance} afterJoinWaitlistUrl="/waitlist/success" />
+            )}
 
             <div className="mt-8 text-center md:hidden">
               <Link href="/" className="flex items-center justify-center gap-2 text-sm font-normal text-zinc-400 transition-colors hover:text-white">

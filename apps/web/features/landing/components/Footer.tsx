@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ReanimateLogo } from "./icons/ReanimateLogo";
+import { SocialLinks } from "./SocialLinks";
 
 export const Footer = () => (
   <motion.footer
@@ -32,33 +33,11 @@ export const Footer = () => (
           <p className="max-w-xs text-base leading-relaxed font-thin text-white/70">
             The agentic video editor that helps you create stunning content 10x faster.
           </p>
-          <div className="flex items-center gap-4">
-            <Link
-              href="https://x.com/reanimate"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
-              aria-label="X (Twitter)"
-            >
-              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="size-5 text-neutral-400 transition-colors group-hover:text-white">
-                <title>X</title>
-                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
-              </svg>
-            </Link>
-            <Link
-              href="https://www.linkedin.com/company/reanimate"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
-              aria-label="LinkedIn"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5 text-neutral-400 transition-colors group-hover:text-white" aria-hidden="true">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                <rect width="4" height="12" x="2" y="9" />
-                <circle cx="4" cy="4" r="2" />
-              </svg>
-            </Link>
-          </div>
+          <SocialLinks
+            className="flex items-center gap-4"
+            linkClassName="group flex items-center justify-center rounded-full border border-transparent bg-white/5 p-2.5 transition-all hover:scale-105 hover:border-white/5 hover:bg-white/10 active:scale-95"
+            iconClassName="size-5 text-neutral-400 transition-colors group-hover:text-white"
+          />
         </div>
 
         <div className="hidden lg:col-span-2 lg:block" />

@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="font-sans relative flex min-h-screen flex-col items-center justify-center overflow-x-hidden bg-black text-white">
-        <ClerkProvider dynamic>
+        <ClerkProvider dynamic waitlistUrl="/waitlist">
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </ClerkProvider>
       </body>

@@ -70,10 +70,10 @@ export const HeroSection = ({
         Watch our launch video
       </button>
       <Link
-        href="/signup"
+        href="/waitlist"
         className="group inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-base font-medium text-black transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
       >
-        Start free trial
+        Join waitlist
         <ArrowRightIcon />
       </Link>
     </div>

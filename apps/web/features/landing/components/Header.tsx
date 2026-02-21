@@ -79,10 +79,10 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
             Login
           </Link>
           <Link
-            href="/signup"
+            href="/waitlist"
             className="text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-white px-6 py-1.75 font-medium text-black transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
           >
-            Sign up
+            Join waitlist
           </Link>
         </div>
       </motion.div>
