@@ -51,13 +51,13 @@ export const HeroSection = ({
 
     {/* Hero Heading */}
     <h1 className="font-landing relative z-10 mt-2 flex max-w-md flex-col items-center text-center text-6xl leading-[1.01] font-medium tracking-[-2px] text-white md:max-w-4xl md:text-6xl lg:text-[68px]">
-      Edit videos at the{" "}
-      <span className="text-neutral-300">speed of thought.</span>
+      Turn apps into{" "}
+      <span className="text-neutral-300">motion fast.</span>
     </h1>
 
     {/* Hero Subtitle */}
     <p className="relative z-10 mt-6 max-w-3xl text-center text-lg font-thin tracking-[-0.5px] text-white/70 md:text-xl">
-      Go from raw footage to a clean, publish-ready edit in minutes.
+      Go from app to animated, motion-designed videos in minutes.
     </p>
 
     {/* CTA Buttons */}

@@ -31,7 +31,7 @@ export const Footer = () => (
             </h3>
           </Link>
           <p className="max-w-xs text-base leading-relaxed font-thin text-white/70">
-            The agentic video editor that helps you create stunning content 10x faster.
+            Create stunning contents for your app 10x faster.
           </p>
           <SocialLinks
             className="flex items-center gap-4"

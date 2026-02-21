@@ -4,14 +4,14 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 
 export const metadata: Metadata = {
-  title: "Reanimate | Agentic Video Editor",
-  description: "A fast, collaborative, and agentic video editor that runs in your browser. Create, cut, and compose videos with AI — no installs, no downloads.",
+  title: "Reanimate | Generate animated product videos for your app with AI",
+  description: "Turn your app into animated product videos with AI. Create demos, launch clips, and social content fast.",
   icons: {
     icon: "/logos/reanimate-logo-white.svg",
   },
   openGraph: {
-    title: "Reanimate | Agentic Video Editor",
-    description: "Create, cut, and compose videos with AI right in your browser.",
+    title: "Reanimate | Generate animated product videos for your app with AI",
+    description: "Turn your app into animated product videos with AI. Create demos, launch clips, and social content fast.",
     images: ["/images/marketing/og.png"],
     type: "website",
   },

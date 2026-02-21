@@ -573,16 +573,16 @@ export const SuperpowersSection = () => (
           viewport={{ once: true }}
           transition={{ delay: 0.03, duration: 0.45 }}
         >
-          An editor with superpowers.
+          An editor anyone can use.
         </motion.h2>
         <motion.p
-          className="mt-6 max-w-4xl text-lg leading-relaxed text-white/70 text-thin"
+          className="mt-6 max-w-4xl text-lg leading-relaxed text-white/70 font-light"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.45 }}
         >
-          A full suite of AI features that speed up the boring parts, without taking control away.
+          Chat your way to stunning motion videos for your app. Simple for beginners, powerful for experts.
         </motion.p>
       </motion.div>
 
