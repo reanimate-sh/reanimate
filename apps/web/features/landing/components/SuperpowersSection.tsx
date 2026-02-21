@@ -356,6 +356,17 @@ const DescribeChangeCard = () => {
 };
 
 const CollaborationCard = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   return (
     <motion.div
       className="group relative col-span-1 overflow-hidden rounded-xl border border-white/5 bg-zinc-950 p-8"
@@ -380,7 +391,12 @@ const CollaborationCard = () => {
           </div>
         </div>
         <div className="relative mt-4 flex grow items-center justify-center py-8">
-          <div className="relative h-64 w-full overflow-hidden rounded-lg border border-white/5 bg-zinc-900/50">
+          <div
+            className="relative h-64 w-full cursor-none overflow-hidden rounded-lg border border-white/5 bg-zinc-900/50"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            onMouseMove={handleMouseMove}
+          >
             {/* Timeline bg */}
             <div className="absolute inset-0 flex flex-col justify-center gap-4 px-4 opacity-50">
               <div className="h-12 w-full rounded-md bg-zinc-800/50" />
@@ -420,6 +436,19 @@ const CollaborationCard = () => {
             <div className="collab-toast absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 px-3 py-1.5 shadow-xl backdrop-blur-md">
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">K</div>
               <span className="text-xs text-zinc-200">Komal tightened this cut</span>
+            </div>
+            {/* You cursor */}
+            <div
+              className="pointer-events-none absolute z-50 transition-opacity duration-150"
+              style={{
+                opacity: isHovering ? 1 : 0,
+                transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px)`,
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 fill-white text-white">
+                <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>
+              </svg>
+              <div className="-mt-2 ml-4 rounded-md bg-white px-1.5 py-0.5 text-[10px] font-medium text-black shadow-sm">You</div>
             </div>
           </div>
         </div>

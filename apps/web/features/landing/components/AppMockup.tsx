@@ -2,8 +2,25 @@
 
 import Image from "next/image";
 import { Geist } from "next/font/google";
-import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowUp,
+  Captions,
+  Folder,
+  ImageIcon,
+  Mic,
+  Music2,
+  Palette,
+  Play,
+  Plus,
+  Search,
+  Settings,
+  WandSparkles,
+  Type,
+} from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ReanimateLogo } from "./icons/ReanimateLogo";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -127,6 +144,575 @@ const TimelineTrackRow = ({ name }: { name: string }) => (
   </div>
 );
 
+type SidebarTab =
+  | "media"
+  | "music"
+  | "captions"
+  | "voiceover"
+  | "text"
+  | "effects"
+  | "luts"
+  | "background"
+  | "settings";
+
+type SidebarTabConfig = {
+  id: SidebarTab;
+  label: string;
+  icon: LucideIcon;
+};
+
+const SIDEBAR_TABS: SidebarTabConfig[] = [
+  { id: "media", label: "Media", icon: Folder },
+  { id: "music", label: "Sound", icon: Music2 },
+  { id: "captions", label: "Captions", icon: Captions },
+  { id: "voiceover", label: "Voiceover", icon: Mic },
+  { id: "text", label: "Text", icon: Type },
+  { id: "effects", label: "Effects", icon: WandSparkles },
+  { id: "luts", label: "Color Grading", icon: Palette },
+  { id: "background", label: "Frames", icon: ImageIcon },
+  { id: "settings", label: "Settings", icon: Settings },
+];
+
+const PANEL_DETAILS: Record<SidebarTab, { title: string; subtitle: string; icon: LucideIcon }> = {
+  media: { title: "Media Library", subtitle: "Uploads & Assets", icon: Folder },
+  music: { title: "Music Library", subtitle: "Soundtracks & Moods", icon: Music2 },
+  captions: { title: "Captions", subtitle: "Auto-transcribe & Edit", icon: Captions },
+  voiceover: { title: "Voiceover", subtitle: "AI Speech Synthesis", icon: Mic },
+  text: { title: "Typography", subtitle: "Styles & Presets", icon: Type },
+  effects: { title: "Effects", subtitle: "Transitions & Motion", icon: WandSparkles },
+  luts: { title: "Color Grading", subtitle: "LUTs & Filters", icon: Palette },
+  background: { title: "Frames", subtitle: "Canvas Backgrounds", icon: ImageIcon },
+  settings: { title: "Settings", subtitle: "Preferences", icon: Settings },
+};
+
+const mediaGridVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.5 },
+  },
+};
+
+const mediaItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const cn = (...classes: Array<string | false | null | undefined>) => classes.filter(Boolean).join(" ");
+
+const ShimmerText = ({ children, className }: { children: string; className?: string }) => (
+  <motion.span
+    className={cn(
+      "bg-gradient-to-r from-zinc-300 via-white to-zinc-300 bg-clip-text text-transparent",
+      className,
+    )}
+    style={{ backgroundSize: "220% auto" }}
+    animate={{ backgroundPosition: ["0% center", "100% center", "0% center"] }}
+    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+  >
+    {children}
+  </motion.span>
+);
+
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: ReactNode;
+};
+
+const SidebarIconButton = ({
+  tab,
+  active,
+  onClick,
+}: {
+  tab: SidebarTabConfig;
+  active: boolean;
+  onClick: () => void;
+}) => {
+  const Icon = tab.icon;
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className="relative flex items-center justify-center"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative">
+        {active && (
+          <motion.div
+            layoutId="active-tab-indicator"
+            className="absolute inset-0 rounded-md bg-white/10"
+            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+          />
+        )}
+      </div>
+      <button
+        type="button"
+        aria-label={tab.label}
+        onClick={onClick}
+        className={cn(
+          "relative z-10 inline-flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-white/10",
+          active ? "text-white" : "text-zinc-500 hover:text-zinc-300",
+        )}
+      >
+        <Icon className="size-5" />
+      </button>
+
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0, x: 10, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 5, scale: 0.9 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute left-full z-50 ml-3 rounded-md border border-white/10 bg-zinc-900/90 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow-xl backdrop-blur-md"
+          >
+            {tab.label}
+            <div className="absolute top-1/2 -left-1 -mt-1 h-2 w-2 -rotate-45 border-t border-l border-white/10 bg-zinc-900/90" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const LeftPanelContent = ({ activeTab }: { activeTab: SidebarTab }) => {
+  const panel = PANEL_DETAILS[activeTab];
+  const Icon = panel.icon;
+
+  return (
+    <div className="flex w-64 flex-col bg-black/30">
+      <div className="animate-in fade-in flex h-full flex-col duration-300">
+        <div className="space-y-4 px-4 py-5 pb-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <h3 className="font-sans text-[14px] leading-none font-semibold text-zinc-100">
+                  {panel.title}
+                </h3>
+                <p className="mt-1.5 font-sans text-[11px] font-medium text-zinc-500">{panel.subtitle}</p>
+              </div>
+            </div>
+            <div
+              className={cn(
+                "flex size-8 items-center justify-center rounded-full",
+                activeTab === "settings" ? "bg-zinc-500/10 text-zinc-400" : "bg-white/10 text-white",
+              )}
+            >
+              <Icon className="size-4" />
+            </div>
+          </div>
+          <div className="h-px w-full bg-white/10" />
+        </div>
+
+        {activeTab === "media" && (
+          <>
+            <div className="p-4 pb-0">
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search assets..."
+                    className="h-9 w-full rounded-xl border border-white/10 bg-white/5 py-1.5 pr-3 pl-9 text-xs text-zinc-300 placeholder:text-zinc-600 focus:border-white/20 focus:ring-1 focus:ring-white/20 focus:outline-none"
+                  />
+                </div>
+                <button className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-white px-3 text-xs font-medium text-black hover:bg-zinc-200">
+                  <Plus className="size-4" />
+                  Add
+                </button>
+              </div>
+            </div>
+            <motion.div
+              className="grid flex-1 grid-cols-2 content-start gap-2 overflow-y-auto p-4"
+              variants={mediaGridVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {[1, 2, 3, 4, 5, 6].map((index) => (
+                <motion.div
+                  key={index}
+                  className="relative aspect-video overflow-hidden rounded-md border border-white/5 bg-zinc-900/50"
+                  variants={mediaItemVariants}
+                >
+                  <div
+                    className="absolute inset-0 animate-pulse bg-white/5"
+                    style={{ animationDelay: `${100 * index}ms` }}
+                  />
+                  <div
+                    className="absolute bottom-1 left-1 h-3 w-8 animate-pulse rounded bg-black/40"
+                    style={{ animationDelay: `${150 * index}ms` }}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          </>
+        )}
+
+        {activeTab === "music" && (
+          <>
+            <div className="overflow-hidden px-4 py-4 pb-0">
+              <div className="no-scrollbar -mb-2 flex gap-2 overflow-x-auto pb-2">
+                {["All", "Cinematic", "Lo-Fi", "Upbeat", "Ambient"].map((genre, index) => (
+                  <button
+                    key={genre}
+                    className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+                      index === 0
+                        ? "border-white/50 bg-white/10 text-white"
+                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <div className="no-scrollbar -mr-4 h-full space-y-2 overflow-y-auto p-4 pr-6">
+                {[
+                  { title: "Neon Nights", artist: "Synthwave Boy", time: "2:14" },
+                  { title: "Deep Focus", artist: "Mind State", time: "4:30" },
+                  { title: "Epic Rise", artist: "Trailer FX", time: "1:45" },
+                  { title: "Chill Hop", artist: "Lofi Beats", time: "3:20" },
+                ].map((track) => (
+                  <div
+                    key={track.title}
+                    className="group flex cursor-pointer items-center gap-3 rounded-xl border border-transparent bg-white/5 p-3 transition-all hover:border-white/10 hover:bg-white/10"
+                  >
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-zinc-500 group-hover:bg-white group-hover:text-black">
+                      <Play className="size-4 fill-current" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-xs font-medium text-zinc-200">{track.title}</div>
+                      <div className="truncate text-[10px] text-zinc-500">{track.artist}</div>
+                    </div>
+                    <div className="text-[10px] font-medium text-zinc-600 group-hover:text-zinc-400">
+                      {track.time}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === "captions" && (
+          <>
+            <div className="px-4 py-4 pb-0">
+              <div className="flex w-full rounded-lg bg-white/5 p-1">
+                <button className="flex-1 rounded-md bg-white/10 py-1 text-[10px] font-bold text-white shadow-sm">
+                  Transcript
+                </button>
+                <button className="flex-1 rounded-md py-1 text-[10px] font-medium text-zinc-500 hover:text-zinc-300">
+                  Styles
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-4">
+                {[
+                  { time: "00:00", text: "Welcome to the future of video editing." },
+                  { time: "00:04", text: "It's not just about cuts anymore." },
+                  { time: "00:08", text: "It's about telling a story." },
+                ].map((caption) => (
+                  <div key={caption.time} className="group relative rounded-lg border border-transparent pl-4 hover:bg-white/5">
+                    <div className="absolute top-0 bottom-0 left-0 w-0.5 bg-zinc-800 group-hover:bg-white/50" />
+                    <span className="mb-1 block font-mono text-[9px] text-zinc-600 group-hover:text-zinc-400">
+                      {caption.time}
+                    </span>
+                    <p className="text-xs leading-relaxed text-zinc-300 group-hover:text-white">{caption.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 bg-black/20 p-4">
+              <button className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-white py-2 text-black hover:bg-zinc-200">
+                <span className="text-xs font-bold">Generate Captions</span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {activeTab === "voiceover" && (
+          <>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <label className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                      Script
+                    </label>
+                    <span className="text-[10px] text-zinc-600">0/5000</span>
+                  </div>
+                  <textarea
+                    className="h-32 w-full resize-none rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-zinc-300 placeholder:text-zinc-600 focus:border-white/20 focus:outline-none"
+                    placeholder="Type your script here..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                    Voice
+                  </label>
+                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white">
+                      <Mic className="size-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs font-medium text-zinc-200">Sarah (Pro)</div>
+                      <div className="text-[10px] text-zinc-500">American, Soft, Calm</div>
+                    </div>
+                    <button className="inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 hover:text-zinc-300">
+                      <ArrowUp className="size-4 rotate-90" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 bg-black/20 p-4">
+              <button className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-white py-2 text-black hover:bg-zinc-200">
+                <Mic className="size-4" />
+                <span className="text-xs font-bold">Generate Speech</span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {activeTab === "text" && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-4">
+              <div>
+                <label className="mb-3 block text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                  Basic
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {["Heading", "Subheading", "Body", "Caption"].map((item, index) => (
+                    <div
+                      key={item}
+                      className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-4 transition-colors hover:bg-white/10"
+                    >
+                      <span
+                        className={cn(
+                          "font-sans text-zinc-200",
+                          index === 0 && "text-lg font-bold",
+                          index === 1 && "text-base font-semibold",
+                          index === 2 && "text-sm font-medium",
+                          index === 3 && "text-xs",
+                        )}
+                      >
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-3 block text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                  Animated
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  {["Fade In Title", "Typewriter", "Lower Third"].map((preset) => (
+                    <div
+                      key={preset}
+                      className="group flex cursor-pointer items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10"
+                    >
+                      <span className="text-xs font-medium text-zinc-300">{preset}</span>
+                      <Play className="size-3 fill-current text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "effects" && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-5">
+              <div>
+                <label className="mb-3 block text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                  Video Transitions
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3, 4, 5, 6].map((index) => (
+                    <div
+                      key={index}
+                      className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2 transition-colors hover:bg-white/10"
+                    >
+                      <div className="size-6 rounded bg-gradient-to-br from-white/20 to-zinc-500/20" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-3 block text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                  Motion
+                </label>
+                <div className="space-y-2">
+                  {["Dynamic Zoom", "Ken Burns", "Shake"].map((effect) => (
+                    <div
+                      key={effect}
+                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 hover:bg-white/10"
+                    >
+                      <div className="flex size-8 items-center justify-center rounded-lg bg-zinc-800 text-white">
+                        <WandSparkles className="size-4" />
+                      </div>
+                      <span className="text-xs font-medium text-zinc-300">{effect}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "luts" && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { name: "Cinematic", color: "from-blue-500/40 to-orange-500/40" },
+                { name: "Teal & Orange", color: "from-cyan-500/40 to-orange-600/40" },
+                { name: "B&W Noir", color: "from-gray-900/60 to-gray-500/40" },
+                { name: "Vintage Warm", color: "from-yellow-500/30 to-red-500/30" },
+                { name: "Cyberpunk", color: "from-pink-500/40 to-cyan-500/40" },
+                { name: "Forest", color: "from-emerald-500/40 to-green-800/40" },
+              ].map((lut) => (
+                <div
+                  key={lut.name}
+                  className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border border-white/10 bg-zinc-900"
+                >
+                  <div className={cn("absolute inset-0 bg-gradient-to-br opacity-60", lut.color)} />
+                  <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6">
+                    <span className="text-[10px] font-medium text-white">{lut.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "background" && (
+          <>
+            <div className="px-4 py-4 pb-0">
+              <div className="flex w-full rounded-lg bg-white/5 p-1">
+                <button className="flex-1 rounded-md bg-white/10 py-1 text-[10px] font-bold text-white shadow-sm">
+                  Preset
+                </button>
+                <button className="flex-1 rounded-md py-1 text-[10px] font-medium text-zinc-500 hover:text-zinc-300">
+                  Gradient
+                </button>
+                <button className="flex-1 rounded-md py-1 text-[10px] font-medium text-zinc-500 hover:text-zinc-300">
+                  Solid
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-3">
+                  {[1, 2, 3, 4, 5, 6].map((index) => (
+                    <div
+                      key={index}
+                      className="aspect-square cursor-pointer rounded-xl border border-white/10 bg-zinc-800 transition-transform hover:scale-105"
+                      style={{
+                        background: `linear-gradient(${45 * index}deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 100%)`,
+                      }}
+                    />
+                  ))}
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase">Padding</label>
+                      <span className="font-mono text-[10px] text-zinc-300">12%</span>
+                    </div>
+                    <div className="h-1 w-full rounded-full bg-white/10">
+                      <div className="h-full w-[12%] rounded-full bg-white" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase">Roundness</label>
+                      <span className="font-mono text-[10px] text-zinc-300">24px</span>
+                    </div>
+                    <div className="h-1 w-full rounded-full bg-white/10">
+                      <div className="h-full w-[40%] rounded-full bg-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === "settings" && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-6">
+              <div className="flex w-full rounded-lg bg-white/5 p-1">
+                <button className="flex-1 rounded-md bg-white/10 py-1 text-[10px] font-bold text-white shadow-sm">
+                  Shortcuts
+                </button>
+                <button className="flex-1 rounded-md py-1 text-[10px] font-medium text-zinc-500 hover:text-zinc-300">
+                  Account
+                </button>
+              </div>
+
+              {[
+                {
+                  category: "Timeline",
+                  items: [
+                    { keybind: "Space", label: "Play/Pause" },
+                    { keybind: "S", label: "Split Clip" },
+                  ],
+                },
+                {
+                  category: "Tools",
+                  items: [
+                    { keybind: "V", label: "Select" },
+                    { keybind: "C", label: "Cut Mode" },
+                  ],
+                },
+                {
+                  category: "Files",
+                  items: [
+                    { keybind: "Cmd+O", label: "Open" },
+                    { keybind: "Cmd+E", label: "Export" },
+                  ],
+                },
+              ].map((section) => (
+                <div key={section.category} className="space-y-3">
+                  <div className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                    {section.category}
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-white/5 bg-white/5">
+                    {section.items.map((item) => (
+                      <div
+                        key={item.label}
+                        className="flex items-center justify-between border-b border-white/5 px-3 py-2 last:border-0"
+                      >
+                        <span className="text-xs text-zinc-300">{item.label}</span>
+                        <kbd className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-400">
+                          {item.keybind}
+                        </kbd>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export type AppMockupProps = {
   loading?: boolean;
   onFramesLoaded?: () => void;
@@ -142,6 +728,10 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
     return 1;
   });
   const [framesReady, setFramesReady] = useState(false);
+  const [activeSidebarTab, setActiveSidebarTab] = useState<SidebarTab>("media");
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -151,6 +741,36 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
   const adjustedScrollProgress = useTransform(scrollYProgress, (latest) => clamp(latest, 0, 1));
 
   const playheadLeft = useTransform(adjustedScrollProgress, [0, 0.5], ["-25%", "55%"]);
+
+  const handleSendChatMessage = () => {
+    if (!chatInput.trim()) return;
+
+    setChatMessages((previous) => [...previous, { role: "user", content: chatInput }]);
+    setChatInput("");
+
+    window.setTimeout(() => {
+      setChatMessages((previous) => [
+        ...previous,
+        {
+          role: "assistant",
+          content: (
+            <>
+              Excited to try it out? How about we{" "}
+              <a
+                href="https://cal.com/sxmawl/chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline underline-offset-2 hover:text-zinc-200"
+              >
+                hop on a call
+              </a>
+              ? :)
+            </>
+          ),
+        },
+      ]);
+    }, 600);
+  };
 
   useMotionValueEvent(adjustedScrollProgress, "change", (latest) => {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
@@ -224,264 +844,27 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
       <div className="pointer-events-none absolute inset-px z-0 rounded-2xl ring-1 ring-white/5 ring-inset" />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar */}
         <motion.div
           className="hidden h-full shrink-0 origin-top border-r border-white/10 md:flex"
           variants={panelVariants}
         >
-          {/* Icon rail */}
           <div className="flex w-12 flex-col items-center gap-2 border-r border-white/10 bg-black/30 py-2">
-            <div className="relative flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-md bg-white/10" />
-                <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors relative z-10 text-white hover:bg-white/10 hover:text-zinc-100">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="size-5"
-                  >
-                    <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="M9 18V5l12-2v13" />
-                <circle cx="6" cy="18" r="3" />
-                <circle cx="18" cy="16" r="3" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="M10 9.17a3 3 0 1 0 0 5.66" />
-                <path d="M17 9.17a3 3 0 1 0 0 5.66" />
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="m11 7.601-5.994 8.19a1 1 0 0 0 .1 1.298l.817.818a1 1 0 0 0 1.314.087L15.09 12" />
-                <path d="M16.5 21.174C15.5 20.5 14.372 20 13 20c-2.058 0-3.928 2.356-6 2-2.072-.356-2.775-3.369-1.5-4.5" />
-                <circle cx="16" cy="7" r="5" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="M12 4v16" />
-                <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
-                <path d="M9 20h6" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
-                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                <circle cx="9" cy="9" r="2" />
-                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 w-10 transition-colors text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-            </button>
+            {SIDEBAR_TABS.map((tab) => (
+              <SidebarIconButton
+                key={tab.id}
+                tab={tab}
+                active={activeSidebarTab === tab.id}
+                onClick={() => setActiveSidebarTab(tab.id)}
+              />
+            ))}
           </div>
-
-          {/* Media Library Panel */}
-          <div className="flex w-64 flex-col bg-black/30">
-            <div className="animate-in fade-in flex h-full flex-col duration-300">
-              <div className="space-y-4 px-4 py-5 pb-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <h3 className="font-sans text-[14px] leading-none font-medium text-zinc-100">
-                        Media Library
-                      </h3>
-                      <p className="mt-1.5 font-sans text-[11px] font-medium text-zinc-500">
-                        Uploads & Assets
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="size-4"
-                    >
-                      <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="h-px w-full bg-white/10" />
-              </div>
-              <div className="p-4 pb-0">
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-zinc-500"
-                    >
-                      <path d="m21 21-4.34-4.34" />
-                      <circle cx="11" cy="11" r="8" />
-                    </svg>
-                    <input
-                      type="text"
-                      placeholder="Search assets..."
-                      className="h-9 w-full rounded-xl border border-white/10 bg-white/5 py-1.5 pr-3 pl-9 text-xs text-zinc-300 placeholder:text-zinc-600 focus:border-white/20 focus:outline-none"
-                    />
-                  </div>
-                  <button className="inline-flex items-center justify-center font-medium rounded-md text-xs h-9 shrink-0 gap-2 bg-white px-3 text-black hover:bg-zinc-200">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="size-4"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="M12 5v14" />
-                    </svg>
-                    Add
-                  </button>
-                </div>
-              </div>
-              <div className="grid flex-1 grid-cols-2 content-start gap-2 overflow-y-auto p-4">
-                {[100, 200, 300, 400, 500, 600].map((delay) => (
-                  <div
-                    key={delay}
-                    className="relative aspect-video overflow-hidden rounded-md border border-white/5 bg-zinc-900/50"
-                  >
-                    <div
-                      className="absolute inset-0 animate-pulse bg-white/5"
-                      style={{ animationDelay: `${delay}ms` }}
-                    />
-                    <div
-                      className="absolute bottom-1 left-1 h-3 w-8 animate-pulse rounded bg-black/40"
-                      style={{ animationDelay: `${delay + 50}ms` }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <LeftPanelContent activeTab={activeSidebarTab} />
         </motion.div>
 
-        {/* Main Canvas Area */}
-        <div className="relative flex flex-1 origin-center flex-col overflow-hidden bg-black/20">
+        <motion.div
+          className="relative flex flex-1 origin-center flex-col overflow-hidden bg-black/20"
+          variants={panelVariants}
+        >
           <div className="flex min-h-0 flex-1 items-center justify-center p-6">
             <div className="group relative flex aspect-video max-h-full w-full items-center justify-center overflow-hidden rounded-lg border border-white/5 bg-black shadow-2xl">
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-zinc-900 to-zinc-950">
@@ -515,9 +898,48 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none"
                 />
               )}
+
+              <AnimatePresence>
+                {showEasterEgg && (
+                  <motion.div
+                    className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      className="relative z-10"
+                      initial={{ scale: 0, rotate: -12, opacity: 0 }}
+                      animate={{ scale: 1, rotate: 3, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15, mass: 0.8 }}
+                    >
+                      <motion.div
+                        animate={{ rotate: [3, 0, 0] }}
+                        transition={{ delay: 0.2, duration: 0.3, ease: "easeOut" }}
+                      >
+                        <div className="h-16 w-16 drop-shadow-2xl md:h-24 md:w-24">
+                          <ReanimateLogo />
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                    <motion.div
+                      className="mt-4 text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ delay: 0.3, duration: 0.3 }}
+                    >
+                      <p className="text-xl font-medium text-white">Bzz. Nice catch : )</p>
+                      <p className="mt-1 text-sm text-white/60">We love people who notice the details.</p>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right AI Director Panel */}
         <motion.div
@@ -553,59 +975,53 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
             </div>
             <div className="mt-2 flex flex-col items-start gap-1">
               <div className="flex items-center gap-2 pl-0 text-xs text-zinc-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-3 w-3 animate-pulse text-white"
-                >
-                  <path d="M12 18V5" />
-                  <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-                  <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-                  <path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" />
-                  <path d="M18 18a4 4 0 0 0 2-7.464" />
-                  <path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />
-                  <path d="M6 18a4 4 0 0 1-2-7.464" />
-                  <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
-                </svg>
-                <p className="text-white/80">Planning the next cut...</p>
+                <Mic className="h-3 w-3 animate-pulse text-white" />
+                <ShimmerText className="text-white/80">Planning the next cut...</ShimmerText>
               </div>
             </div>
+
+            {chatMessages.map((message, index) => (
+              <div
+                key={`${message.role}-${index}`}
+                className={cn("flex flex-col gap-1", message.role === "user" ? "items-end" : "items-start")}
+              >
+                <div
+                  className={cn(
+                    "max-w-[90%] rounded-lg p-3 text-sm",
+                    message.role === "user"
+                      ? "bg-zinc-800 text-zinc-100"
+                      : "bg-transparent pl-0 text-zinc-300",
+                  )}
+                >
+                  {message.content}
+                </div>
+              </div>
+            ))}
           </div>
           <div className="p-4 pt-0">
             <div className="relative w-full rounded-lg border border-white/10 bg-black/30 p-2">
               <textarea
+                value={chatInput}
+                onChange={(event) => setChatInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" || event.shiftKey) return;
+                  event.preventDefault();
+                  handleSendChatMessage();
+                }}
                 className="min-h-[60px] w-full resize-none bg-transparent p-2 text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none"
                 placeholder="What story do you want to tell?"
               />
               <div className="mt-2 flex items-center justify-between px-2 pb-1">
                 <div className="flex items-center gap-2">
                   <div className="rounded-md border border-white/5 bg-white/5 p-1 text-xs text-zinc-400">
-                    Claude Sonnet 4.5
+                    Claude Sonnet 4.6
                   </div>
                 </div>
-                <button className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-white text-black hover:bg-zinc-200">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="size-4"
-                  >
-                    <path d="m5 12 7-7 7 7" />
-                    <path d="M12 19V5" />
-                  </svg>
+                <button
+                  onClick={handleSendChatMessage}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white text-black hover:bg-zinc-200"
+                >
+                  <ArrowUp className="size-4" />
                 </button>
               </div>
             </div>
@@ -696,7 +1112,16 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
                 <path d="M21 20V4" />
               </svg>
             </button>
-            <button className="inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-200 hover:bg-white/10 hover:text-white">
+            <button
+              onClick={() => {
+                if (showEasterEgg) return;
+                setShowEasterEgg(true);
+                window.setTimeout(() => {
+                  setShowEasterEgg(false);
+                }, 5000);
+              }}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-200 hover:bg-white/10 hover:text-white"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
