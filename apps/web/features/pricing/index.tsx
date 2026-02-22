@@ -4,7 +4,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { Footer } from "@/features/landing/components/Footer";
 import { Header } from "@/features/landing/components/Header";
-import { BackedBySection } from "./components/BackedBySection";
 import { BillingCycleToggle } from "./components/BillingCycleToggle";
 import { PricingFaqSection } from "./components/PricingFaqSection";
 import { PricingPlanCard } from "./components/PricingPlanCard";
@@ -80,7 +79,8 @@ export const PricingPage = () => {
             ))}
           </div>
 
-          <BackedBySection />
+          {/* <BackedBySection /> */}
+          <div className="mt-50" />
 
           <PricingFaqSection
             faqs={FAQS}

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 import { PlayIcon } from "./icons/PlayIcon";
 import { ArrowRightIcon } from "./icons/ArrowRightIcon";
@@ -36,7 +36,7 @@ export const HeroSection = ({
     </div>
 
     {/* YC Badge */}
-    <div className="relative z-10 mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur-sm">
+    {/* <div className="relative z-10 mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur-sm">
       <span>Backed by</span>
       <Image
         alt="Y Combinator"
@@ -47,7 +47,9 @@ export const HeroSection = ({
         className="h-5 w-auto object-contain"
         src="/images/marketing/yc-badge.png"
       />
-    </div>
+    </div> */}
+
+    <div className="mt-22" />
 
     {/* Hero Heading */}
     <h1 className="font-landing relative z-10 mt-2 flex max-w-md flex-col items-center text-center text-6xl leading-[1.01] font-medium tracking-[-2px] text-white md:max-w-4xl md:text-6xl lg:text-[68px]">

@@ -1,23 +1,42 @@
 import type { FaqItem, Plan } from "./types";
 
+const trialEndDate = new Date();
+trialEndDate.setDate(trialEndDate.getDate() + 7);
+const day = trialEndDate.getDate();
+const ordinal =
+  day % 100 >= 11 && day % 100 <= 13
+    ? "th"
+    : ["th", "st", "nd", "rd"][Math.min(day % 10, 4)] ?? "th";
+const trialDateStr =
+  trialEndDate.toLocaleDateString("en-US", { month: "short" }) +
+  ` ${day}${ordinal}`;
+
+function makeAnnualPrice(monthlyPrice: number) {
+  return Math.round(monthlyPrice * 0.8);
+}
+
+function annualNote(monthlyPrice: number) {
+  return `billed at $${makeAnnualPrice(monthlyPrice) * 12}/year, starting ${trialDateStr}`;
+}
+
 export const PLANS: Plan[] = [
   {
     name: "Creator",
     description: "Perfect for content creators starting their journey.",
     ctaLabel: "Start 7-day trial",
     ctaHref: "/signup",
-    monthlyPrice: 75,
-    annualPrice: 60,
-    annualBillingNote: "billed at $720/year, starting Feb 25th",
+    monthlyPrice: 25,
+    annualPrice: makeAnnualPrice(25),
+    annualBillingNote: annualNote(25),
     features: [
       { label: "Full AI-powered editing" },
       { label: "5 active projects per month" },
       { label: "Natural language commands" },
-      { label: "1GB max file size", hasInfo: true },
+      // { label: "1GB max file size", hasInfo: true },
       { label: "100GB cloud storage" },
       { label: "Automated captions" },
-      { label: "Unlimited exports upto 4K 60fps" },
-      { label: "Export to Premiere Pro & DaVinci Resolve" },
+      { label: "Unlimited exports" },
+      // { label: "Export to Premiere Pro & DaVinci Resolve" },
     ],
   },
   {
@@ -25,15 +44,15 @@ export const PLANS: Plan[] = [
     description: "Everything you need for professional production.",
     ctaLabel: "Start 7-day trial",
     ctaHref: "/signup",
-    monthlyPrice: 200,
-    annualPrice: 150,
-    annualBillingNote: "billed at $1,800/year, starting Feb 25th",
+    monthlyPrice: 100,
+    annualPrice: makeAnnualPrice(100),
+    annualBillingNote: annualNote(100),
     isFeatured: true,
     features: [
       { label: "Everything in Creator" },
       { label: "Unlimited projects" },
       { label: "Priority AI processing" },
-      { label: "5GB max file size", hasInfo: true },
+      // { label: "5GB max file size", hasInfo: true },
       { label: "1TB cloud storage" },
       { label: "Priority 24/7 support" },
       { label: "Early access to new models" },

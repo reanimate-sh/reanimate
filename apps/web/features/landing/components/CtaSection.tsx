@@ -29,7 +29,7 @@ export const CtaSection = () => (
         viewport={{ once: true }}
         transition={{ delay: 0.1, duration: 0.45 }}
       >
-        Pricing starts at <span className="text-white font-medium">$60/month</span>.
+        Pricing starts at <span className="text-white font-medium">$25/month</span>.
       </motion.p>
       <motion.div
         className="flex flex-col sm:flex-row items-center justify-center gap-4"
