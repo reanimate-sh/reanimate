@@ -5,7 +5,7 @@ export const VideoModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-4xl mx-4 aspect-video bg-black rounded-lg overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className="relative w-full max-w-4xl mx-4 aspect-video" onClick={e => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
@@ -19,7 +19,7 @@ export const VideoModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
           controls
           autoPlay
           className="w-full h-full"
-          poster="/marketing/hero/frames_00001.webp"
+          poster="/images/hero/mockup.png"
         >
           <source src="/videos/hero-720.mp4" type="video/mp4" />
         </video>

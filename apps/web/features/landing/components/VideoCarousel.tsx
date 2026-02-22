@@ -10,11 +10,12 @@ type VideoCardProps = {
   isActive: boolean;
   portrait: boolean;
   isMuted: boolean;
+  isVisible: boolean;
   onToggleMute: () => void;
   onEnded: () => void;
 };
 
-const CarouselVideoCard = ({ src, isActive, portrait, isMuted, onToggleMute, onEnded }: VideoCardProps) => {
+const CarouselVideoCard = ({ src, isActive, portrait, isMuted, isVisible, onToggleMute, onEnded }: VideoCardProps) => {
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const blurVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -26,7 +27,7 @@ const CarouselVideoCard = ({ src, isActive, portrait, isMuted, onToggleMute, onE
       }
     };
 
-    if (isActive) {
+    if (isActive && isVisible) {
       if (mainVideoRef.current) {
         playVideo(mainVideoRef.current);
       }
@@ -38,13 +39,13 @@ const CarouselVideoCard = ({ src, isActive, portrait, isMuted, onToggleMute, onE
 
     if (mainVideoRef.current) {
       mainVideoRef.current.pause();
-      mainVideoRef.current.currentTime = 0;
+      if (!isVisible) mainVideoRef.current.currentTime = 0;
     }
     if (blurVideoRef.current) {
       blurVideoRef.current.pause();
-      blurVideoRef.current.currentTime = 0;
+      if (!isVisible) blurVideoRef.current.currentTime = 0;
     }
-  }, [isActive]);
+  }, [isActive, isVisible]);
 
   useEffect(() => {
     if (mainVideoRef.current) {
@@ -60,7 +61,7 @@ const CarouselVideoCard = ({ src, isActive, portrait, isMuted, onToggleMute, onE
   if (!portrait) {
     return (
       <div className="relative h-full w-full bg-black">
-        <video ref={mainVideoRef} src={src} muted={isMuted} playsInline onEnded={isActive ? onEnded : undefined} className="h-full w-full object-cover opacity-80" />
+        <video ref={mainVideoRef} src={src} muted={isMuted} playsInline onEnded={isActive ? onEnded : undefined} className="h-full w-full object-cover" />
         {isActive && (
           <button onClick={handleToggleMute} className="absolute right-3 bottom-3 z-30 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm hover:bg-black/70 md:right-4 md:bottom-4">
             {isMuted ? <VolumeX className="h-2.5 w-2.5" /> : <Volume2 className="h-2.5 w-2.5" />}
@@ -89,11 +90,24 @@ const CarouselVideoCard = ({ src, isActive, portrait, isMuted, onToggleMute, onE
 
 export const VideoCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(2);
-  const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const updateIsMobile = () => {
@@ -106,10 +120,6 @@ export const VideoCarousel = () => {
   }, []);
 
   const handleVideoEnded = () => {
-    if (isPaused) {
-      return;
-    }
-
     setCurrentSlide((index) => (index + 1) % CAROUSEL_VIDEOS.length);
   };
 
@@ -151,10 +161,6 @@ export const VideoCarousel = () => {
   return (
     <motion.div
       className="relative flex h-[350px] w-full items-center justify-center overflow-hidden md:h-[600px]"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onViewportLeave={() => setIsMuted(true)}
-      viewport={{ amount: 0.1 }}
       ref={containerRef}
     >
       <div className="relative flex h-full w-full max-w-[1400px] items-center justify-center">
@@ -186,6 +192,7 @@ export const VideoCarousel = () => {
                   isActive={cardState.zIndex === 10}
                   portrait={video.portrait}
                   isMuted={isMuted}
+                  isVisible={isVisible}
                   onToggleMute={() => setIsMuted(!isMuted)}
                   onEnded={handleVideoEnded}
                 />

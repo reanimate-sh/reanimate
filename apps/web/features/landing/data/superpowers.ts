@@ -1,53 +1,23 @@
 export const STEPS = [
   {
-    prompt: "Cut the awkward pauses.",
-    activeCard: "Silence Removal",
-  },
-  {
-    prompt: "Make this look more cinematic.",
-    activeCard: "Color Grade",
-  },
-  {
-    prompt: "Add cinematic captions.",
-    activeCard: "Captions",
-  },
-  {
     prompt: "Add a narrator voiceover.",
     activeCard: "Voiceover",
+  },
+  {
+    prompt: "Zoom into the pricing card.",
+    activeCard: "Smart Zoom",
+  },
+  {
+    prompt: "Pan to the API section.",
+    activeCard: "Screen Pan",
   },
   {
     prompt: "Cut this down to 30s.",
     activeCard: "Smart Trim",
   },
-];
-
-export const SEARCH_STEPS = [
   {
-    query: "audience laughs",
-    results: [
-      { name: "IMG_4829.mov", time: "02:14" },
-      { name: "Audience_Laugh.mp4", time: "04:12" },
-      { name: "IMG_4831.mov", time: "01:05" },
-    ],
-    activeResult: 1,
-  },
-  {
-    query: "car horn",
-    results: [
-      { name: "IMG_4829.mov", time: "02:14" },
-      { name: "IMG_4830.mov", time: "04:12" },
-      { name: "Traffic_Horn.wav", time: "01:05" },
-    ],
-    activeResult: 2,
-  },
-  {
-    query: "door slam",
-    results: [
-      { name: "Door_Slam_Reverb.mp3", time: "02:14" },
-      { name: "IMG_4830.mov", time: "04:12" },
-      { name: "IMG_4831.mov", time: "01:05" },
-    ],
-    activeResult: 0,
+    prompt: "Add a click ripple on submit.",
+    activeCard: "Click Ripple",
   },
 ];
 
@@ -62,9 +32,9 @@ export const CUSTOMERS = [
 ];
 
 export const CAROUSEL_VIDEOS = [
-  { src: "/videos/talking-head-ishan-1.mp4", title: "Talking heads", description: "Framing + Captions in seconds.", portrait: false },
-  { src: "/videos/vlog-trim.mp4", title: "Vlogs", description: "Automatically creates stories out of your footage.", portrait: true },
-  { src: "/videos/montage-trim.mp4", title: "Montages", description: "Punchy edits that land on the beat.", portrait: false },
-  { src: "/videos/gl-trim.mp4", title: "Launch Videos", description: "Pitch your product in style.", portrait: false },
-  { src: "/videos/shopos-explainer-1.mp4", title: "Explainers", description: "Break down complex topics with clear visuals.", portrait: true },
+  { src: "/videos/intro.mp4", title: "Launch videos", description: "Pitch your product in style.", portrait: false },
+  { src: "/videos/compilation.mp4", title: "Feature compilation", description: "Showcase multiple features of your app", portrait: false },
+  { src: "/videos/promo.mp4", title: "Promo", description: "Build hype and drive action.", portrait: false },
+  { src: "/videos/explainer.mp4", title: "Explainers", description: "Break down complex topics with clear visuals.", portrait: false },
+  { src: "/videos/feature.mp4", title: "Feature launch", description: "Launch a new feature in style.", portrait: false }
 ];

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Geist } from "next/font/google";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
@@ -27,7 +26,6 @@ const geist = Geist({
   variable: "--font-geist",
 });
 
-const TOTAL_HERO_FRAMES = 120;
 const EASE_IN_OUT: [number, number, number, number] = [0.42, 0, 0.58, 1];
 
 const appMockupVariants = {
@@ -73,9 +71,6 @@ const panelVariants = {
     },
   },
 };
-
-const getHeroFrameSrc = (frame: number) =>
-  `https://www.usecardboard.com/marketing/hero/frames_${frame.toString().padStart(5, "0")}.webp`;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -720,14 +715,8 @@ export type AppMockupProps = {
 
 export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const preloadedFramesRef = useRef<HTMLImageElement[]>([]);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const [frameIndex, setFrameIndex] = useState(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) return 60;
-    return 1;
-  });
-  const [framesReady, setFramesReady] = useState(false);
   const [activeSidebarTab, setActiveSidebarTab] = useState<SidebarTab>("media");
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -741,6 +730,12 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
   const adjustedScrollProgress = useTransform(scrollYProgress, (latest) => clamp(latest, 0, 1));
 
   const playheadLeft = useTransform(adjustedScrollProgress, [0, 0.5], ["-25%", "55%"]);
+
+  useMotionValueEvent(adjustedScrollProgress, "change", (latest) => {
+    const video = videoRef.current;
+    if (!video || !video.duration) return;
+    video.currentTime = latest * video.duration;
+  });
 
   const handleSendChatMessage = () => {
     if (!chatInput.trim()) return;
@@ -772,62 +767,9 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
     }, 600);
   };
 
-  useMotionValueEvent(adjustedScrollProgress, "change", (latest) => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      return;
-    }
-
-    const nextFrame = Math.min(
-      Math.max(Math.floor(119 * Math.min(2 * latest, 1)) + 1, 1),
-      TOTAL_HERO_FRAMES,
-    );
-
-    setFrameIndex((previous) => (previous === nextFrame ? previous : nextFrame));
-  });
-
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      onFramesLoaded?.();
-      return;
-    }
-
-    let loadedFrameCount = 0;
-    const frames: HTMLImageElement[] = [];
-
-    for (let i = 1; i <= TOTAL_HERO_FRAMES; i += 1) {
-      const frame = new window.Image();
-      frame.src = getHeroFrameSrc(i);
-      frame.onload = () => {
-        loadedFrameCount += 1;
-        if (loadedFrameCount === TOTAL_HERO_FRAMES) {
-          setFramesReady(true);
-          onFramesLoaded?.();
-        }
-      };
-      frames.push(frame);
-    }
-
-    preloadedFramesRef.current = frames;
-
-    return () => {
-      preloadedFramesRef.current = [];
-    };
+    onFramesLoaded?.();
   }, [onFramesLoaded]);
-
-  useEffect(() => {
-    if (!framesReady) return;
-
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    const frame = preloadedFramesRef.current[frameIndex - 1];
-
-    if (!canvas || !context || !frame) return;
-
-    canvas.width = frame.naturalWidth;
-    canvas.height = frame.naturalHeight;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(frame, 0, 0);
-  }, [frameIndex, framesReady]);
 
   return (
     <motion.div
@@ -883,21 +825,14 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
                   <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
                 </svg>
               </div>
-              {!framesReady && (
-                <Image
-                  src="/marketing/hero/frames_00001.webp"
-                  alt=""
-                  className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none"
-                  fill
-                  draggable={false}
-                />
-              )}
-              {framesReady && (
-                <canvas
-                  ref={canvasRef}
-                  className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none"
-                />
-              )}
+              <video
+                ref={videoRef}
+                className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none"
+                src="/videos/mockup.MP4"
+                muted
+                playsInline
+                preload="auto"
+              />
 
               <AnimatePresence>
                 {showEasterEgg && (
@@ -1259,8 +1194,8 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
               <div className="relative h-12 border-b border-white/5 px-2">
                 <div className="absolute top-0 bottom-0 left-[20%] z-10 w-[18%] overflow-hidden rounded-md border border-white/40 bg-white/20 ring-1 ring-white/20">
                   <div
-                    className="absolute inset-0 bg-cover bg-center opacity-40"
-                    style={{ backgroundImage: `url(${getHeroFrameSrc(9)})` }}
+                    className="absolute inset-0 bg-cover bg-center opacity-60"
+                    style={{ backgroundImage: `url(/images/hero/mockup-roll.png)` }}
                   />
                 </div>
                 <div className="absolute top-0 bottom-0 left-[40%] w-[15%] overflow-hidden rounded-md border border-white/20 bg-white/10">

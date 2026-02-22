@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { STEPS, SEARCH_STEPS } from "../data/superpowers";
+import { STEPS } from "../data/superpowers";
 
 const COLOR_MAP: Record<string, string> = {
   rose: "bg-rose-500/5",
@@ -32,109 +32,7 @@ type FeatureCard = {
   position: string;
 };
 
-const buildFeatureCards = (voicePeaks: number[]): FeatureCard[] => [
-  {
-    key: "Silence Removal",
-    color: "rose",
-    doneLabel: "Done",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-400">
-        <circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>
-      </svg>
-    ),
-    body: ({ result }) => (
-      <div className="relative flex h-14 w-full items-center overflow-hidden rounded-lg bg-black/40 px-3 ring-1 ring-white/5">
-        <div className="absolute top-1/2 right-0 left-0 h-px -translate-y-1/2 bg-zinc-800" />
-        <div className="flex w-full items-center justify-between gap-1">
-          {[1, 0, 1, 1, 0, 1, 1, 1, 0, 1].map((filled, i) => (
-            <div
-              key={i}
-              className={`h-6 rounded-sm ${filled ? "bg-zinc-700" : "bg-rose-500/20"}`}
-              style={{
-                width: result ? (filled ? "20%" : "0%") : (filled ? "15%" : "8%"),
-                opacity: result && !filled ? 0 : 1,
-                marginRight: result && !filled ? "0px" : "2px",
-                transition: "width 600ms ease-in-out, opacity 600ms ease-in-out, margin-right 600ms ease-in-out",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    ),
-    footer: ["Track 1 (Audio)", "-4.2s"],
-    position: "absolute top-0 right-12 z-20",
-  },
-  {
-    key: "Color Grade",
-    color: "emerald",
-    doneLabel: "Applied",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
-        <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/>
-        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-      </svg>
-    ),
-    body: ({ result }) => (
-      <div className="flex h-14 w-full items-center justify-center gap-3 rounded-lg bg-black/40 px-3 ring-1 ring-white/5">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="relative h-8 w-8 rounded-full border border-white/10 bg-zinc-800 shadow-inner">
-            <div
-              className="absolute inset-0 rounded-full transition-all duration-500"
-              style={{
-                backgroundColor: result ? ["#10b981", "#0ea5e9", "#f59e0b"][i] : "transparent",
-                opacity: result ? 0.3 : 0,
-              }}
-            />
-            <div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white shadow-sm transition-all duration-500"
-              style={{
-                top: result ? ["30%", "60%", "40%"][i] : "50%",
-                left: result ? ["40%", "70%", "30%"][i] : "50%",
-                transform: "translateX(-50%) translateY(-50%)",
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    ),
-    footer: ["Matrix_LUT", "100%"],
-    position: "absolute top-8 left-12 z-10",
-  },
-  {
-    key: "Captions",
-    color: "blue",
-    doneLabel: "Generated",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400">
-        <path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/>
-      </svg>
-    ),
-    body: ({ result }) => (
-      <div className="relative flex h-14 w-full flex-col justify-center gap-1.5 rounded-lg bg-black/40 px-4 py-2 ring-1 ring-white/5">
-        {[1, 2].map((t, i) => (
-          <div key={t} className="flex items-center gap-2">
-            <span className="font-mono text-[8px] text-zinc-600">00:0{t}</span>
-            <div className="flex-1">
-              <div
-                className="h-1.5 rounded-sm bg-zinc-700 transition-all duration-500"
-                style={{
-                  width: result ? (i === 0 ? "80%" : "60%") : "0%",
-                  transitionDelay: `${i * 200}ms`,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-        <div
-          className="absolute top-2 left-0 h-6 w-0.5 rounded-r bg-emerald-500 transition-opacity duration-300"
-          style={{ opacity: result ? 1 : 0 }}
-        />
-      </div>
-    ),
-    footer: ["English (US)", "99% Acc"],
-    position: "absolute bottom-20 left-64 z-20",
-  },
+const buildFeatureCards = (): FeatureCard[] => [
   {
     key: "Voiceover",
     color: "purple",
@@ -146,7 +44,7 @@ const buildFeatureCards = (voicePeaks: number[]): FeatureCard[] => [
     ),
     body: ({ result }) => (
       <div className="flex h-14 w-full items-center justify-center gap-0.5 rounded-lg bg-black/40 px-2 ring-1 ring-white/5">
-        {voicePeaks.map((peak, i) => (
+        {VOICE_PEAKS.map((peak, i) => (
           <div
             key={i}
             className="voiceover-pulse w-1 rounded-full bg-purple-500/40"
@@ -171,6 +69,60 @@ const buildFeatureCards = (voicePeaks: number[]): FeatureCard[] => [
     position: "absolute right-32 bottom-20 z-30",
   },
   {
+    key: "Smart Zoom",
+    color: "emerald",
+    doneLabel: "Focused",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
+        <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+    ),
+    body: ({ result }) => (
+      <div className="relative h-14 w-full overflow-hidden rounded-lg bg-black/40 ring-1 ring-white/5">
+        <div className="absolute inset-2 rounded border border-white/10 bg-zinc-900/70" />
+        <div
+          className="absolute rounded-md border-2 border-emerald-300/80 bg-emerald-500/10 transition-all duration-500"
+          style={{
+            left: result ? "44%" : "14%",
+            top: result ? "10%" : "25%",
+            width: result ? "44%" : "72%",
+            height: result ? "80%" : "50%",
+            boxShadow: result ? "0 0 0 1px rgba(16,185,129,0.35), inset 0 0 20px rgba(16,185,129,0.2)" : "none",
+          }}
+        />
+        <div className="absolute top-1/2 left-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-200/90" />
+      </div>
+    ),
+    footer: ["Zoom level", "160%"],
+    position: "absolute top-8 left-12 z-10",
+  },
+  {
+    key: "Screen Pan",
+    color: "blue",
+    doneLabel: "Aligned",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400">
+        <path d="M3 12h18"/><path d="m9 6-6 6 6 6"/><path d="m15 6 6 6-6 6"/>
+      </svg>
+    ),
+    body: ({ result }) => (
+      <div className="relative flex h-14 w-full items-center rounded-lg bg-black/40 px-3 ring-1 ring-white/5">
+        <div className="absolute left-3 right-3 h-6 rounded-md bg-zinc-800/90" />
+        <div className="absolute left-5 flex gap-2 opacity-50">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-3 w-6 rounded-sm bg-zinc-700/70" />
+          ))}
+        </div>
+        <div
+          className="absolute top-1/2 h-8 w-16 -translate-y-1/2 rounded-md border border-blue-300/75 bg-blue-500/15 shadow-[0_0_0_1px_rgba(59,130,246,0.35)] transition-all duration-500"
+          style={{ left: result ? "64%" : "18%" }}
+        />
+      </div>
+    ),
+    footer: ["Viewport X", "+420"],
+    position: "absolute bottom-20 left-64 z-20",
+  },
+  {
     key: "Smart Trim",
     color: "amber",
     doneLabel: "Trimmed",
@@ -192,6 +144,36 @@ const buildFeatureCards = (voicePeaks: number[]): FeatureCard[] => [
     footer: ["Duration", "-14s"],
     position: "absolute top-[-20px] left-1/2 -translate-x-1/2 z-10",
   },
+  {
+    key: "Click Ripple",
+    color: "amber",
+    doneLabel: "Triggered",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400">
+        <circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/>
+      </svg>
+    ),
+    body: ({ result }) => (
+      <div className="flex h-14 w-full items-center justify-center rounded-lg bg-black/40 px-3 ring-1 ring-white/5">
+        <div className="relative h-8 w-8 rounded-full border border-amber-300/70 bg-amber-400/15">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="absolute inset-0 rounded-full border border-amber-300/70 transition-all duration-500"
+              style={{
+                transform: result ? `scale(${1 + i * 0.55})` : "scale(0.65)",
+                opacity: result ? 0.66 - i * 0.2 : 0,
+                transitionDelay: `${i * 120}ms`,
+              }}
+            />
+          ))}
+          <div className="absolute top-1/2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-200" />
+        </div>
+      </div>
+    ),
+    footer: ["Submit", "ripple"],
+    position: "absolute top-0 right-12 z-20",
+  },
 ];
 
 type DescribePhase = "typing" | "sending" | "processing" | "result";
@@ -201,7 +183,7 @@ const DescribeChangeCard = () => {
   const [phase, setPhase] = useState<DescribePhase>("typing");
   const [typedPrompt, setTypedPrompt] = useState("");
   const step = STEPS[stepIndex];
-  const featureCards = buildFeatureCards(VOICE_PEAKS);
+  const featureCards = buildFeatureCards();
 
   useEffect(() => {
     if (phase !== "typing") return;
@@ -268,7 +250,7 @@ const DescribeChangeCard = () => {
           <div className="flex flex-col">
             <h3 className="text-xl font-medium tracking-tight text-white">Describe the change</h3>
             <p className="mt-2 text-lg leading-relaxed text-zinc-400">
-              Reanimate understands the semantic meaning of your request and maps it to complex timeline operations automatically.
+              Reanimate understands the semantic layout of your app and maps your text prompts to precise screen actions, zooms, and clicks automatically.
             </p>
           </div>
         </div>
@@ -457,45 +439,93 @@ const CollaborationCard = () => {
   );
 };
 
-const SEARCH_IDLE_RESULTS = [
-  { name: "IMG_4829.mov", time: "02:14" },
-  { name: "IMG_4830.mov", time: "04:12" },
-  { name: "IMG_4831.mov", time: "01:05" },
-];
+const VISUAL_EDIT_SUFFIX = " today";
 
-type SearchPhase = "idle" | "typing" | "results";
+const VISUAL_EDIT_PHASES = [
+  { id: "select", label: "Click", hint: "Select element" },
+  { id: "text", label: "Edit", hint: "Update text" },
+  { id: "drag", label: "Drag", hint: "Reposition layer" },
+  { id: "resize", label: "Resize", hint: "Adjust frame" },
+] as const;
 
-const FindAnythingCard = () => {
-  const [searchIndex, setSearchIndex] = useState(0);
-  const [phase, setPhase] = useState<SearchPhase>("idle");
+type VisualEditPhase = (typeof VISUAL_EDIT_PHASES)[number]["id"];
+
+const VISUAL_EDIT_LAYOUT: Record<
+  VisualEditPhase,
+  {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    cursorX: number;
+    cursorY: number;
+    panelX: number;
+    panelY: number;
+    panelW: number;
+    panelH: number;
+  }
+> = {
+  select: { x: 10, y: 22, width: 56, height: 38, cursorX: 16, cursorY: 53, panelX: 96, panelY: 58, panelW: 640, panelH: 384 },
+  text: { x: 10, y: 22, width: 56, height: 38, cursorX: 33, cursorY: 52, panelX: 96, panelY: 58, panelW: 640, panelH: 384 },
+  drag: { x: 24, y: 40, width: 56, height: 38, cursorX: 57, cursorY: 60, panelX: 182, panelY: 104, panelW: 640, panelH: 384 },
+  resize: { x: 24, y: 40, width: 66, height: 43, cursorX: 87, cursorY: 83, panelX: 182, panelY: 104, panelW: 780, panelH: 430 },
+};
+
+const VisualEditCard = () => {
+  const [phaseIndex, setPhaseIndex] = useState(0);
   const [typedChars, setTypedChars] = useState(0);
-  const searchStep = SEARCH_STEPS[searchIndex];
+  const phase = VISUAL_EDIT_PHASES[phaseIndex];
+  const layout = VISUAL_EDIT_LAYOUT[phase.id];
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
-    if (phase === "idle") {
-      timeout = setTimeout(() => setPhase("typing"), 900);
-    } else if (phase === "typing") {
-      if (typedChars < searchStep.query.length) {
+    if (phase.id === "text") {
+      if (typedChars < VISUAL_EDIT_SUFFIX.length) {
         timeout = setTimeout(() => setTypedChars((chars) => chars + 1), 70);
       } else {
-        timeout = setTimeout(() => setPhase("results"), 450);
+        timeout = setTimeout(() => setPhaseIndex((index) => (index + 1) % VISUAL_EDIT_PHASES.length), 750);
       }
     } else {
-      timeout = setTimeout(() => {
-        setTypedChars(0);
-        setPhase("idle");
-        setSearchIndex((index) => (index + 1) % SEARCH_STEPS.length);
-      }, 1700);
+      timeout = setTimeout(
+        () =>
+          setPhaseIndex((index) => {
+            const nextIndex = (index + 1) % VISUAL_EDIT_PHASES.length;
+
+            if (VISUAL_EDIT_PHASES[nextIndex].id === "text") {
+              setTypedChars(0);
+            }
+
+            return nextIndex;
+          }),
+        phase.id === "select" ? 1000 : 1350,
+      );
     }
 
     return () => clearTimeout(timeout);
-  }, [phase, typedChars, searchStep.query.length]);
+  }, [phase.id, typedChars]);
 
-  const visibleQuery = phase === "idle" ? "Find anything..." : searchStep.query.slice(0, typedChars);
-  const visibleResults = phase === "results" ? searchStep.results : SEARCH_IDLE_RESULTS;
-  const activeResult = phase === "results" ? searchStep.activeResult : -1;
+  const editedSuffix =
+    phase.id === "select"
+      ? ""
+      : phase.id === "text"
+        ? VISUAL_EDIT_SUFFIX.slice(0, typedChars)
+        : VISUAL_EDIT_SUFFIX;
+
+  const controls = [
+    { label: "X", value: layout.panelX },
+    { label: "Y", value: layout.panelY },
+    { label: "W", value: layout.panelW },
+    { label: "H", value: layout.panelH },
+  ];
+
+  const isSelectedPhase = phase.id === "select" || phase.id === "drag";
+
+  const isCoordinateActive = (label: string) => {
+    if (phase.id === "drag") return label === "X" || label === "Y";
+    if (phase.id === "resize") return label === "W" || label === "H";
+    return false;
+  };
 
   return (
     <motion.div
@@ -509,75 +539,117 @@ const FindAnythingCard = () => {
         <div className="relative z-10 mb-8 flex flex-row items-start gap-4">
           <div className="mt-1 flex h-6 w-6 items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-zinc-400">
-              <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
+              <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>
             </svg>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-xl font-medium tracking-tight text-white">Find anything</h3>
-            <p className="mt-2 text-lg leading-relaxed text-zinc-400">Search clips by what happened. Not filenames.</p>
+            <h3 className="text-xl font-medium tracking-tight text-white">Visual edit</h3>
+            <p className="mt-2 text-lg leading-relaxed text-zinc-400">Click elements, edit text, drag, and resize with precise control over every frame.</p>
           </div>
         </div>
+
         <div className="relative mt-4 flex grow flex-col items-center justify-start py-4">
           <div className="w-full max-w-[340px]">
-            {/* Search box */}
-            <div className="relative mb-4 flex h-12 items-center rounded-xl border border-white/5 bg-zinc-900 shadow-xl ring-1 ring-white/5 transition-all duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`mr-3 ml-4 h-4 w-4 transition-colors ${phase === "idle" ? "text-zinc-400" : "text-zinc-100"}`}>
-                <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
-              </svg>
-              <div className="relative flex-1 overflow-hidden text-sm text-zinc-300">
-                <div className={`font-medium ${phase === "idle" ? "text-zinc-500" : "text-zinc-100"}`}>
-                  {visibleQuery}
-                  <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-zinc-400 align-text-bottom" />
-                </div>
-              </div>
-            </div>
-            {/* Results */}
-            <div className="relative space-y-2">
-              {visibleResults.map((result, i) => {
-                const isActive = i === activeResult;
-                const rowStyle = isActive
-                  ? {
-                      opacity: 1,
-                      backgroundColor: "rgba(255,255,255,0.08)",
-                      borderColor: "rgba(255,255,255,0.1)",
-                    }
-                  : phase === "results"
-                    ? {
-                        opacity: 0.2,
-                        backgroundColor: "rgba(39,39,42,0.2)",
-                        borderColor: "rgba(255,255,255,0.02)",
-                      }
-                    : {
-                        opacity: 0.4,
-                        backgroundColor: "rgba(39,39,42,0.2)",
-                        borderColor: "rgba(255,255,255,0.05)",
-                      };
+            <div className="mb-4 flex flex-wrap gap-2">
+              {VISUAL_EDIT_PHASES.map((item, index) => {
+                const isActive = index === phaseIndex;
+                const isDone = index < phaseIndex;
 
                 return (
                   <div
-                    key={`${searchIndex}-${phase}-${result.name}`}
-                    className="flex items-center gap-3 rounded-lg border border-white/5 bg-zinc-800/20 p-3 transition-all duration-500"
-                    style={rowStyle}
+                    key={item.id}
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-medium tracking-wide transition-all duration-300 ${
+                      isActive
+                        ? "bg-zinc-100 text-zinc-950"
+                        : isDone
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "bg-zinc-900 text-zinc-500"
+                    }`}
                   >
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-md ${isActive ? "bg-zinc-100" : "bg-zinc-800 ring-1 ring-white/5"}`}>
-                      {isActive ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-zinc-900"><path d="M20 6 9 17l-5-5"/></svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-zinc-600">
-                          <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
-                          <path d="M14 2v5a1 1 0 0 0 1 1h5"/>
-                          <path d="M15.033 13.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56v-4.704a.645.645 0 0 1 .967-.56z"/>
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <div className={`text-sm font-medium transition-colors ${isActive ? "text-zinc-100" : "text-zinc-500"}`}>{result.name}</div>
-                      <div className={`text-xs ${isActive ? "text-zinc-400" : "text-zinc-700"}`}>{result.time}</div>
-                    </div>
+                    {item.label}
                   </div>
                 );
               })}
             </div>
+
+            <div className="relative h-56 overflow-hidden rounded-xl border border-white/10 bg-zinc-900/50 shadow-xl ring-1 ring-white/5">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.16),transparent_45%)]" />
+              <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.14)_1px,transparent_1px)] [background-size:28px_28px]" />
+              <div
+                className="absolute overflow-visible rounded-lg border bg-zinc-950/90 px-3 py-2"
+                style={{
+                  left: `${layout.x}%`,
+                  top: `${layout.y}%`,
+                  width: `${layout.width}%`,
+                  height: `${layout.height}%`,
+                  borderColor:
+                    isSelectedPhase
+                      ? "rgba(56,189,248,0.92)"
+                      : phase.id === "resize"
+                        ? "rgba(251,191,36,0.88)"
+                        : "rgba(255,255,255,0.3)",
+                  boxShadow:
+                    isSelectedPhase
+                      ? "0 0 0 1px rgba(56,189,248,0.38), 0 18px 34px -18px rgba(56,189,248,0.82)"
+                      : phase.id === "resize"
+                        ? "0 0 0 1px rgba(251,191,36,0.34), 0 18px 34px -18px rgba(251,191,36,0.7)"
+                        : "0 18px 34px -20px rgba(0,0,0,0.95)",
+                  transition:
+                    "left 650ms cubic-bezier(0.22,1,0.36,1), top 650ms cubic-bezier(0.22,1,0.36,1), width 650ms cubic-bezier(0.22,1,0.36,1), height 650ms cubic-bezier(0.22,1,0.36,1), border-color 350ms ease, box-shadow 350ms ease",
+                }}
+              >
+                <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Headline</div>
+                <div className="mt-1 text-sm font-medium text-zinc-100">
+                  Launch your product{editedSuffix}
+                  {phase.id === "text" && <span className="ml-0.5 inline-block h-3.5 w-[1.5px] animate-pulse bg-zinc-300 align-text-bottom" />}
+                </div>
+                <div className="mt-1.5 h-1.5 w-2/3 rounded-full bg-zinc-700/70" />
+                <div className="mt-1 h-1 w-[42%] rounded-full bg-zinc-700/50" />
+                {[
+                  "top-0 left-0 -translate-x-1/2 -translate-y-1/2",
+                  "top-0 right-0 translate-x-1/2 -translate-y-1/2",
+                  "bottom-0 left-0 -translate-x-1/2 translate-y-1/2",
+                  "right-0 bottom-0 translate-x-1/2 translate-y-1/2",
+                ].map((handleClass) => (
+                  <div
+                    key={handleClass}
+                    className={`absolute h-3.5 w-3.5 rounded-full border border-amber-200/80 bg-amber-300 shadow-[0_0_0_2px_rgba(24,24,27,0.95),0_6px_14px_-7px_rgba(251,191,36,0.95)] transition-opacity duration-300 ${handleClass}`}
+                    style={{ opacity: phase.id === "resize" ? 1 : 0 }}
+                  />
+                ))}
+              </div>
+              <div
+                className="pointer-events-none absolute z-20 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{
+                  left: `${layout.cursorX}%`,
+                  top: `${layout.cursorY}%`,
+                  transform: "translateX(-50%) translateY(-50%)",
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 fill-white text-white drop-shadow-[0_6px_12px_rgba(0,0,0,0.8)]">
+                  <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>
+                </svg>
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between rounded-lg border border-white/10 bg-zinc-950/70 px-3 py-2 backdrop-blur-sm">
+              <div className="text-[10px] font-medium tracking-[0.12em] text-zinc-500 uppercase">Coordinates</div>
+              <div className="flex items-center gap-1.5 font-mono text-[11px] tabular-nums">
+                {controls.map((control, index) => {
+                  const isActive = isCoordinateActive(control.label);
+
+                  return (
+                    <div key={control.label} className="flex items-center gap-1">
+                      {index > 0 && <span className="text-zinc-700">/</span>}
+                      <span className={`${isActive ? "text-cyan-200" : "text-zinc-500"}`}>{control.label}</span>
+                      <span className={`${isActive ? "text-cyan-100" : "text-zinc-200"}`}>{control.value}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-3 text-xs text-zinc-500">Action: {phase.hint}</div>
           </div>
         </div>
       </div>
@@ -618,7 +690,7 @@ export const SuperpowersSection = () => (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <DescribeChangeCard />
         <CollaborationCard />
-        <FindAnythingCard />
+        <VisualEditCard />
       </div>
     </div>
   </section>
