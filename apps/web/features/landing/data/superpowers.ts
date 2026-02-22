@@ -22,13 +22,16 @@ export const STEPS = [
 ];
 
 export const CUSTOMERS = [
-  { name: "Autumn", slug: "autumn", url: "https://autumnai.com" },
-  { name: "General Legal", slug: "general-legal", url: "https://general.legal" },
-  { name: "Hyperspell", slug: "hyperspell", url: "https://hyperspell.com" },
-  { name: "Oolka", slug: "oolka", url: "https://oolka.in" },
-  { name: "Oximy", slug: "oximy", url: "https://oximy.com" },
-  { name: "PostHog", slug: "posthog", url: "https://posthog.com" },
-  { name: "Shopos", slug: "shopos", url: "https://shopos.ai" },
+  { name: "Amazon", slug: "amazon", ext: "svg", height: 32, url: "https://amazon.com" },
+  { name: "Microsoft", slug: "microsoft", ext: "svg", height: 32, url: "https://microsoft.com" },
+  { name: "LinkedIn", slug: "linkedin", ext: "svg", height: 32, url: "https://linkedin.com" },
+  { name: "Flipkart", slug: "flipkart", ext: "png", height: 36, filter: "invert(1)", url: "https://flipkart.com" },
+  { name: "PhonePe", slug: "phonepe", ext: "webp", height: 36, filter: "brightness(0) invert(1)", url: "https://phonepe.com" },
+  { name: "Ideavo", slug: "ideavo", ext: "png", height: 24, url: "https://ideavo.ai" },
+  { name: "OpenBrowser", slug: "openbrowser", ext: "png", height: 20, url: "https://openbrowser.tech" },
+  { name: "Treaps", slug: "treaps", ext: "png", height: 22, url: "https://treaps.com" },
+  { name: "Sarvam", slug: "sarvam", ext: "svg", height: 20, filter: "brightness(0) invert(1)", url: "https://sarvam.ai" },
+  { name: "Cred", slug: "cred", ext: "png", height: 32, filter: "invert(1)", url: "https://cred.club" },
 ];
 
 export const CAROUSEL_VIDEOS = [

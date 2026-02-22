@@ -192,7 +192,7 @@ html {
   user-select: none;
   animation: marquee 30s linear infinite;
   align-items: center;
-  height: 100px;
+  height: 80px;
 }
 
 .logo-marquee-track:hover {
@@ -200,7 +200,7 @@ html {
 }
 
 .logoloop-item {
-  margin-right: 60px;
+  margin-right: 120px;
   flex: 0 0 auto;
   line-height: 1;
 }
