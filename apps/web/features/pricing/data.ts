@@ -19,6 +19,10 @@ function annualNote(monthlyPrice: number) {
   return `billed at $${makeAnnualPrice(monthlyPrice) * 12}/year, starting ${trialDateStr}`;
 }
 
+function monthlyNote() {
+  return `billing starts at ${trialDateStr}`;
+}
+
 export const PLANS: Plan[] = [
   {
     name: "Creator",
@@ -27,6 +31,7 @@ export const PLANS: Plan[] = [
     ctaHref: "/signup",
     monthlyPrice: 25,
     annualPrice: makeAnnualPrice(25),
+    monthlyBillingNote: monthlyNote(),
     annualBillingNote: annualNote(25),
     features: [
       { label: "Full AI-powered editing" },
@@ -46,6 +51,7 @@ export const PLANS: Plan[] = [
     ctaHref: "/signup",
     monthlyPrice: 100,
     annualPrice: makeAnnualPrice(100),
+    monthlyBillingNote: monthlyNote(),
     annualBillingNote: annualNote(100),
     isFeatured: true,
     features: [

@@ -17,5 +17,5 @@ export const getPlanSecondaryText = (plan: Plan, billingCycle: BillingCycle) => 
     return plan.customSubtext;
   }
 
-  return billingCycle === "annual" ? plan.annualBillingNote ?? "" : "";
+  return billingCycle === "annual" ? plan.annualBillingNote ?? "" : plan.monthlyBillingNote ?? "";
 };

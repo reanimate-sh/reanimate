@@ -31,7 +31,7 @@ export const PricingPlanCard = ({ plan, billingCycle, index }: PricingPlanCardPr
     >
       <div
         className={`absolute inset-0 -z-10 bg-gradient-to-br opacity-0 transition-opacity duration-700 group-hover:opacity-100 ${
-          usesTeamsAccent ? "from-purple-500/20 via-transparent to-transparent" : "from-white/10 via-transparent to-transparent"
+          usesTeamsAccent ? "from-green-400/10 via-transparent to-transparent" : "from-white/10 via-transparent to-transparent"
         }`}
       />
 

@@ -18,6 +18,7 @@ type BasePlan = {
 export type RecurringPlan = BasePlan & {
   monthlyPrice: number;
   annualPrice: number;
+  monthlyBillingNote?: string;
   annualBillingNote?: string;
   customPrice?: never;
   customSubtext?: never;
@@ -28,6 +29,7 @@ export type CustomPlan = BasePlan & {
   customSubtext: string;
   monthlyPrice?: never;
   annualPrice?: never;
+  monthlyBillingNote?: never;
   annualBillingNote?: never;
 };
 
