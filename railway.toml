@@ -1,0 +1,5 @@
+[build]
+buildCommand = "sh build.sh"
+
+[deploy]
+startCommand = "pnpm --filter web start"
