@@ -14,15 +14,11 @@ import { LoadingLogoOverlay } from "./components/LoadingLogoOverlay";
 export const LandingPage = () => {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [logoAnimationComplete, setLogoAnimationComplete] = useState(false);
-  const [heroFramesLoaded, setHeroFramesLoaded] = useState(false);
   const handleLogoAnimationComplete = useCallback(() => {
     setLogoAnimationComplete(true);
   }, []);
-  const handleHeroFramesLoaded = useCallback(() => {
-    setHeroFramesLoaded(true);
-  }, []);
 
-  const isPageLoading = !logoAnimationComplete || !heroFramesLoaded;
+  const isPageLoading = !logoAnimationComplete;
 
   return (
     <div className="font-landing relative z-10 flex w-full flex-col items-center">
@@ -34,8 +30,6 @@ export const LandingPage = () => {
       <VideoModal isOpen={isVideoOpen} onClose={() => setIsVideoOpen(false)} />
       <Header showLogo={!isPageLoading} />
       <HeroSection
-        loading={isPageLoading}
-        onFramesLoaded={handleHeroFramesLoaded}
         onWatchVideo={() => setIsVideoOpen(true)}
       />
       <FeaturesCarouselSection />

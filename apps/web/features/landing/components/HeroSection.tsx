@@ -9,15 +9,9 @@ import { AppMockup } from "./AppMockup";
 
 type HeroSectionProps = {
   onWatchVideo: () => void;
-  loading?: boolean;
-  onFramesLoaded?: () => void;
 };
 
-export const HeroSection = ({
-  onWatchVideo,
-  loading = false,
-  onFramesLoaded,
-}: HeroSectionProps) => (
+export const HeroSection = ({ onWatchVideo }: HeroSectionProps) => (
   <section className="relative z-10 flex min-h-screen w-full flex-col items-center justify-start px-4 pt-36 sm:px-6 lg:pt-42">
     {/* Background Video */}
     <div
@@ -82,7 +76,7 @@ export const HeroSection = ({
 
     {/* App Mockup */}
     <div className="relative z-10 mt-16 w-full max-w-[1400px] px-4 sm:px-6">
-      <AppMockup loading={loading} onFramesLoaded={onFramesLoaded} />
+      <AppMockup />
     </div>
 
     <CustomerLogosSection />

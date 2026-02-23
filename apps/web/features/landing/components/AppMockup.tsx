@@ -708,12 +708,9 @@ const LeftPanelContent = ({ activeTab }: { activeTab: SidebarTab }) => {
   );
 };
 
-export type AppMockupProps = {
-  loading?: boolean;
-  onFramesLoaded?: () => void;
-};
+export type AppMockupProps = Record<string, never>;
 
-export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) => {
+export const AppMockup = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -767,17 +764,13 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
     }, 600);
   };
 
-  useEffect(() => {
-    onFramesLoaded?.();
-  }, [onFramesLoaded]);
-
   return (
     <motion.div
       ref={containerRef}
       className={`${geist.variable} [--font-sans:var(--font-geist)] relative z-20 flex h-[460px] w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/40 font-sans text-xs text-zinc-400 shadow-2xl shadow-black/50 backdrop-blur-xl select-none md:h-[720px]`}
       variants={appMockupVariants}
       initial="hidden"
-      animate={loading ? "hidden" : "visible"}
+      animate="visible"
       style={{ perspective: "1200px" }}
     >
       {/* Glass overlay effects */}
