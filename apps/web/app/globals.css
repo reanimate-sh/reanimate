@@ -120,7 +120,7 @@ html {
   }
 }
 
-@keyframes collabAlex {
+@keyframes collabBruce {
   0%,
   18%,
   82%,
@@ -152,9 +152,9 @@ html {
   animation: collabSelection 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.collab-alex {
+.collab-bruce {
   transform: translateX(240px) translateY(140px);
-  animation: collabAlex 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: collabBruce 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .collab-toast {
@@ -181,8 +181,12 @@ html {
 
 /* Logo marquee */
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .logo-marquee-track {
@@ -206,8 +210,20 @@ html {
 }
 
 .logo-marquee-fade {
-  mask-image: linear-gradient(90deg, transparent 0px, black 10%, black 90%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 10%,
+    black 90%,
+    transparent
+  );
 }
 
 .light-rays-container {
@@ -225,7 +241,7 @@ html {
   }
 
   .collab-selection,
-  .collab-alex,
+  .collab-bruce,
   .collab-toast,
   .voiceover-pulse {
     animation: none;

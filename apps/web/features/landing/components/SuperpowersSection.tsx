@@ -389,23 +389,23 @@ const CollaborationCard = () => {
               </div>
               <div className="h-12 w-full rounded-md bg-zinc-800/50" />
             </div>
-            {/* Komal selection */}
+            {/* Elena selection */}
             <div className="pointer-events-none absolute inset-x-4 top-1/2 h-12 -translate-y-1/2">
               <div className="collab-selection absolute left-0 h-full rounded-md border-2 border-rose-500/50 bg-rose-500/20">
                 <div className="absolute -top-3 -right-3 z-20">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 fill-rose-500 text-rose-500">
                     <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>
                   </svg>
-                  <div className="-mt-2 ml-4 rounded-md bg-rose-500 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm">Komal</div>
+                  <div className="-mt-2 ml-4 rounded-md bg-rose-500 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm">Elena</div>
                 </div>
               </div>
             </div>
-            {/* Alex cursor */}
-            <div className="collab-alex absolute z-20">
+            {/* Bruce cursor */}
+            <div className="collab-bruce absolute z-20">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 fill-amber-500 text-amber-500">
                 <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>
               </svg>
-              <div className="-mt-2 ml-4 rounded-md bg-amber-500 px-1.5 py-0.5 text-[10px] font-medium text-black shadow-sm">Alex</div>
+              <div className="-mt-2 ml-4 rounded-md bg-amber-500 px-1.5 py-0.5 text-[10px] font-medium text-black shadow-sm">Bruce</div>
             </div>
             <div className="absolute top-[150px] left-[250px] z-10 scale-0 opacity-0">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-black shadow-lg">
@@ -417,7 +417,7 @@ const CollaborationCard = () => {
             {/* Toast */}
             <div className="collab-toast absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 px-3 py-1.5 shadow-xl backdrop-blur-md">
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">K</div>
-              <span className="text-xs text-zinc-200">Komal tightened this cut</span>
+              <span className="text-xs text-zinc-200">Elena tightened this cut</span>
             </div>
             {/* You cursor */}
             <div
