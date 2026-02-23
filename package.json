@@ -19,5 +19,9 @@
       "esbuild",
       "@tailwindcss/oxide"
     ]
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.32.0",
+    "svix": "^1.85.0"
   }
 }
