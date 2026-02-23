@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ReanimateLogo } from "@/features/landing/components/icons/ReanimateLogo";
 import { SocialLinks } from "@/features/landing/components/SocialLinks";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const BrandLink = ({ mobile = false }: { mobile?: boolean }) => (
   <Link href="/" className="flex items-center gap-3">

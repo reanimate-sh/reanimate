@@ -1,0 +1,59 @@
+# Reanimate
+
+> Reanimate is an AI-powered tool that turns your app into animated, motion-designed marketing videos. Go from app to publish-ready product video in minutes.
+
+## What is Reanimate?
+
+Reanimate is a web-based AI video generation tool purpose-built for app developers, SaaS founders, and product marketers. It generates animated, motion-designed product videos directly from your app — no video editing or motion design experience required.
+
+## Use Cases
+
+- App demo videos for product launches
+- Animated marketing videos for SaaS and mobile apps
+- Social media video content (Twitter/X, LinkedIn, Instagram, TikTok)
+- App store preview videos
+- Product walkthrough videos
+- Feature announcement videos
+- Pitch deck video clips
+
+## Who uses Reanimate?
+
+App developers, SaaS founders, indie hackers, product marketers, and startup teams who need professional-quality marketing videos without hiring a motion designer or video editor. Customers include teams at Microsoft, Amazon, LinkedIn, PhonePe, Flipkart, and Sarvam.
+
+## Key Features
+
+- AI-generated animated product videos from your app
+- Natural language video editing (describe the change, AI does the rest)
+- Smart zoom, screen pan, and click ripple animations
+- Automated captions
+- Voiceover generation
+- Smart trim (removes dead time automatically)
+- Live real-time collaboration
+- Visual edit: click, drag, and resize elements
+- Unlimited exports
+
+## Alternatives
+
+Reanimate is an AI-native alternative to: Loom, Screen Studio, Rotato, Descript, After Effects, ScreenFlow, Kite, Veed.io — specifically for creating animated, motion-designed app marketing videos.
+
+## Pricing
+
+- Creator: $25/month — 5 active projects, 100GB storage, full AI editing
+- Pro: $100/month — Unlimited projects, 1TB storage, priority support
+- Teams: Custom pricing — Real-time collaboration, SAML/SSO, unlimited storage
+- All plans include a 7-day free trial
+
+## Company
+
+- Name: Reanimate Inc.
+- Website: https://reanimate.sh
+- Contact: contact@reanimate.sh
+- Backed by Y Combinator
+
+## Pages
+
+- Homepage: https://reanimate.sh
+- Pricing: https://reanimate.sh/pricing
+- Changelog: https://reanimate.sh/changelog
+- Privacy Policy: https://reanimate.sh/privacy
+- Terms of Service: https://reanimate.sh/terms

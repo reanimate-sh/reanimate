@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Home from "./inner";
 import { preloadQuery, preloadedQueryResult } from "convex/nextjs";
 import { api } from "@/lib/convexApi";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function ServerPage() {
   const preloaded = await preloadQuery(api.users.current, {});

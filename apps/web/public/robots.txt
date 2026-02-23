@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /login
+Disallow: /signup
+Disallow: /waitlist
+Disallow: /server
+Disallow: /sso-callback
+
+Sitemap: https://reanimate.sh/sitemap.xml

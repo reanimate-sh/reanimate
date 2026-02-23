@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { UserButton, UserProfile } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const clerkAppearance = {
   baseTheme: dark,
