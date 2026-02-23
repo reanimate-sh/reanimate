@@ -828,7 +828,7 @@ export const AppMockup = ({ loading = false, onFramesLoaded }: AppMockupProps) =
               <video
                 ref={videoRef}
                 className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none"
-                src="/videos/mockup.MP4"
+                src="/videos/mockup.mp4"
                 muted
                 playsInline
                 preload="auto"
