@@ -3,6 +3,7 @@ import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
+import { createDodoWebhookHandler } from "@dodopayments/convex";
 
 const http = httpRouter();
 
@@ -32,6 +33,84 @@ http.route({
     }
 
     return new Response(null, { status: 200 });
+  }),
+});
+
+http.route({
+  path: "/dodopayments-webhook",
+  method: "POST",
+  handler: createDodoWebhookHandler({
+    onSubscriptionActive: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionActive, {
+        clerkUserId: (payload.data as any).metadata?.clerkUserId,
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        productId: payload.data.product_id ?? undefined,
+        status: payload.data.status,
+        currentPeriodEnd: payload.data.next_billing_date
+          ? new Date(payload.data.next_billing_date).toISOString()
+          : undefined,
+      });
+    },
+
+    onSubscriptionRenewed: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        productId: payload.data.product_id ?? undefined,
+        status: payload.data.status,
+        currentPeriodEnd: payload.data.next_billing_date
+          ? new Date(payload.data.next_billing_date).toISOString()
+          : undefined,
+      });
+    },
+
+    onSubscriptionPlanChanged: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        productId: payload.data.product_id ?? undefined,
+        status: payload.data.status,
+        currentPeriodEnd: payload.data.next_billing_date
+          ? new Date(payload.data.next_billing_date).toISOString()
+          : undefined,
+      });
+    },
+
+    onSubscriptionCancelled: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        status: payload.data.status,
+        currentPeriodEnd: payload.data.next_billing_date
+          ? new Date(payload.data.next_billing_date).toISOString()
+          : undefined,
+      });
+    },
+
+    onSubscriptionOnHold: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        status: payload.data.status,
+      });
+    },
+
+    onSubscriptionFailed: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        status: payload.data.status,
+      });
+    },
+
+    onSubscriptionExpired: async (ctx, payload) => {
+      await ctx.runMutation(internal.webhooks.onSubscriptionUpdated, {
+        dodoCustomerId: payload.data.customer.customer_id,
+        subscriptionId: payload.data.subscription_id,
+        status: payload.data.status,
+      });
+    },
   }),
 });
 

@@ -1,4 +1,4 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import { internalMutation, internalQuery, query, QueryCtx } from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
 
@@ -62,3 +62,11 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
     .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
     .unique();
 }
+
+// Used by the Dodo identify function to look up a user by their Clerk ID.
+export const getByExternalId = internalQuery({
+  args: { externalId: v.string() },
+  handler: async (ctx, { externalId }) => {
+    return await userByExternalId(ctx, externalId);
+  },
+});
