@@ -1,6 +1,13 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { isKnownProductId } from "./plans";
+import { getPlanByProductId } from "./plans";
+import { allotCredits } from "./credits";
+import { logTransaction } from "./transactions";
+
+function cycleSourceId(subscriptionId: string, periodEnd?: string) {
+  const date = periodEnd ? new Date(periodEnd) : new Date(Date.now());
+  return `${subscriptionId}:${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+}
 
 export const onSubscriptionActive = internalMutation({
   args: {
@@ -12,16 +19,17 @@ export const onSubscriptionActive = internalMutation({
     currentPeriodEnd: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (!args.productId || !isKnownProductId(args.productId)) {
+    if (!args.clerkUserId) {
       console.warn(
-        `onSubscriptionActive: unrecognized product ID "${args.productId}" for customer ${args.dodoCustomerId}`
+        `onSubscriptionActive: no clerkUserId in metadata for customer ${args.dodoCustomerId}`
       );
       return;
     }
 
-    if (!args.clerkUserId) {
+    const plan = args.productId ? getPlanByProductId(args.productId) : undefined;
+    if (!plan) {
       console.warn(
-        `onSubscriptionActive: no clerkUserId in metadata for customer ${args.dodoCustomerId}`
+        `onSubscriptionActive: unrecognized product ID "${args.productId}" for customer ${args.dodoCustomerId}`
       );
       return;
     }
@@ -38,12 +46,33 @@ export const onSubscriptionActive = internalMutation({
       return;
     }
 
-    await ctx.db.patch(user._id, {
+    await ctx.db.patch("users", user._id, {
       dodoCustomerId: args.dodoCustomerId,
       subscriptionId: args.subscriptionId,
       subscriptionStatus: args.status,
       productId: args.productId,
       currentPeriodEnd: args.currentPeriodEnd,
+    });
+
+    const sourceId = cycleSourceId(args.subscriptionId, args.currentPeriodEnd);
+    const metadata = { planName: plan.name, billingCycle: plan.billingCycle };
+
+    await allotCredits(ctx.db, {
+      userId: user._id,
+      type: "subscription",
+      amount: plan.credits,
+      sourceId,
+      expiresAt: args.currentPeriodEnd,
+      metadata,
+    });
+
+    await logTransaction(ctx.db, {
+      userId: user._id,
+      type: "credit",
+      amount: plan.credits,
+      source: "subscription",
+      sourceId,
+      metadata,
     });
   },
 });
@@ -71,20 +100,48 @@ export const onSubscriptionUpdated = internalMutation({
       return;
     }
 
-    if (args.productId && !isKnownProductId(args.productId)) {
+    const effectiveProductId = args.productId ?? user.productId;
+    const plan = effectiveProductId
+      ? getPlanByProductId(effectiveProductId)
+      : undefined;
+
+    if (args.productId && !plan) {
       console.warn(
         `onSubscriptionUpdated: unrecognized product ID "${args.productId}" for customer ${args.dodoCustomerId}`
       );
       return;
     }
 
-    await ctx.db.patch(user._id, {
+    await ctx.db.patch("users", user._id, {
       subscriptionId: args.subscriptionId,
       subscriptionStatus: args.status,
-      productId: args.productId ?? user.productId,
+      productId: effectiveProductId,
       ...(args.currentPeriodEnd !== undefined
         ? { currentPeriodEnd: args.currentPeriodEnd }
         : {}),
     });
+
+    if (plan && args.status === "active") {
+      const sourceId = cycleSourceId(args.subscriptionId, args.currentPeriodEnd);
+      const metadata = { planName: plan.name, billingCycle: plan.billingCycle };
+
+      await allotCredits(ctx.db, {
+        userId: user._id,
+        type: "subscription",
+        amount: plan.credits,
+        sourceId,
+        expiresAt: args.currentPeriodEnd,
+        metadata,
+      });
+
+      await logTransaction(ctx.db, {
+        userId: user._id,
+        type: "credit",
+        amount: plan.credits,
+        source: "subscription",
+        sourceId,
+        metadata,
+      });
+    }
   },
 });
