@@ -78,6 +78,32 @@ function minExpiry(primary: Date, periodEnd?: string) {
   return new Date(Math.min(primary.getTime(), periodEndMs)).toISOString();
 }
 
+function resolveCreditGrantForUpdate(args: {
+  currentPlan: { productId: string; credits: number };
+  previousPlan?: { productId: string; credits: number };
+  isSameSubscription: boolean;
+  sourceDate?: string | Date;
+  subscriptionId: string;
+}) {
+  const baseSourceId = sourceIdForMonth(args.subscriptionId, args.sourceDate);
+  const hasPlanChanged =
+    !!args.previousPlan && args.previousPlan.productId !== args.currentPlan.productId;
+
+  if (!args.isSameSubscription || !hasPlanChanged) {
+    return { amount: args.currentPlan.credits, sourceId: baseSourceId };
+  }
+
+  const delta = args.currentPlan.credits - args.previousPlan!.credits;
+  if (delta <= 0) {
+    return { amount: 0, sourceId: baseSourceId };
+  }
+
+  return {
+    amount: delta,
+    sourceId: `${baseSourceId}:upgrade:${args.currentPlan.productId}`,
+  };
+}
+
 async function grantSubscriptionCredits(
   ctx: MutationCtx,
   args: {
@@ -251,6 +277,10 @@ export const onSubscriptionUpdated = internalMutation({
     const plan = effectiveProductId
       ? getPlanByProductId(effectiveProductId)
       : undefined;
+    const previousPlan = user.productId
+      ? getPlanByProductId(user.productId)
+      : undefined;
+    const isSameSubscription = user.subscriptionId === args.subscriptionId;
 
     if (args.productId && !plan) {
       console.warn(
@@ -276,9 +306,6 @@ export const onSubscriptionUpdated = internalMutation({
 
     if (plan.billingCycle === "annual") {
       const now = new Date();
-      const previousPlan = user.productId
-        ? getPlanByProductId(user.productId)
-        : undefined;
       const sameAnnualSubscription =
         user.subscriptionId === args.subscriptionId &&
         previousPlan?.billingCycle === "annual" &&
@@ -289,7 +316,14 @@ export const onSubscriptionUpdated = internalMutation({
         : now;
       const anchor = Number.isNaN(parsedAnchor.getTime()) ? now : parsedAnchor;
       const nextGrantAt = nextAnchorAfter(anchor, now);
-      const sourceId = sourceIdForMonth(args.subscriptionId, now);
+      const { amount: grantAmount, sourceId: grantSourceId } =
+        resolveCreditGrantForUpdate({
+          currentPlan: plan,
+          previousPlan,
+          isSameSubscription,
+          sourceDate: now,
+          subscriptionId: args.subscriptionId,
+        });
       const scheduleVersion = (user.creditScheduleVersion ?? 0) + 1;
 
       await ctx.db.patch("users", user._id, {
@@ -304,13 +338,15 @@ export const onSubscriptionUpdated = internalMutation({
           : {}),
       });
 
-      await grantSubscriptionCredits(ctx, {
-        userId: user._id,
-        amount: plan.credits,
-        sourceId,
-        expiresAt: minExpiry(nextGrantAt, args.subscriptionPeriodEnd),
-        metadata,
-      });
+      if (grantAmount > 0) {
+        await grantSubscriptionCredits(ctx, {
+          userId: user._id,
+          amount: grantAmount,
+          sourceId: grantSourceId,
+          expiresAt: minExpiry(nextGrantAt, args.subscriptionPeriodEnd),
+          metadata,
+        });
+      }
 
       await scheduleAnnualCreditGrant(ctx, {
         userId: user._id,
@@ -331,17 +367,23 @@ export const onSubscriptionUpdated = internalMutation({
         : {}),
     });
 
-    const sourceId = sourceIdForMonth(
-      args.subscriptionId,
-      args.subscriptionPeriodEnd,
-    );
-    await grantSubscriptionCredits(ctx, {
-      userId: user._id,
-      amount: plan.credits,
-      sourceId,
-      expiresAt: args.subscriptionPeriodEnd,
-      metadata,
-    });
+    const { amount: grantAmount, sourceId: grantSourceId } =
+      resolveCreditGrantForUpdate({
+        currentPlan: plan,
+        previousPlan,
+        isSameSubscription,
+        sourceDate: args.subscriptionPeriodEnd,
+        subscriptionId: args.subscriptionId,
+      });
+    if (grantAmount > 0) {
+      await grantSubscriptionCredits(ctx, {
+        userId: user._id,
+        amount: grantAmount,
+        sourceId: grantSourceId,
+        expiresAt: args.subscriptionPeriodEnd,
+        metadata,
+      });
+    }
   },
 });
 

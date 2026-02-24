@@ -11,6 +11,7 @@ import { PricingFaqSection } from "./components/PricingFaqSection";
 import { PricingPlanCard } from "./components/PricingPlanCard";
 import { FAQS, PLANS } from "./data";
 import type { BillingCycle } from "./types";
+import { isRecurringPlan } from "./utils";
 
 const DEFAULT_BILLING_CYCLE: BillingCycle = "annual";
 const DEFAULT_OPEN_FAQ_INDEX = 0;
@@ -19,8 +20,10 @@ export const PricingPage = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(DEFAULT_BILLING_CYCLE);
   const [openQuestionIndex, setOpenQuestionIndex] = useState(DEFAULT_OPEN_FAQ_INDEX);
   const plans = useQuery(api.plans.getPlans);
+  const currentUser = useQuery(api.users.current);
   const { scrollY } = useScroll();
   const faqDarkenOpacity = useTransform(scrollY, [0, 560, 920, 1320], [0, 0, 0.28, 0.46]);
+  const hasUsedTrial = Boolean(currentUser?.subscriptionId);
 
   const handleToggleQuestion = (index: number) => {
     setOpenQuestionIndex((currentOpenQuestion) => (currentOpenQuestion === index ? -1 : index));
@@ -79,15 +82,26 @@ export const PricingPage = () => {
           <div className="grid w-full max-w-[90rem] gap-10 md:grid-cols-2 lg:grid-cols-3">
             {PLANS.map((plan, index) => {
               const entry = plans?.find(
-                (p) => p.name === plan.name && p.billing === billingCycle
+                (p) => p.name === plan.name && p.billingCycle === billingCycle
               );
+              const displayPlan = isRecurringPlan(plan)
+                ? {
+                    ...plan,
+                    ctaLabel: hasUsedTrial ? `Choose ${plan.name}` : "Start 7-day trial",
+                  }
+                : plan;
+              const isCurrentPlan = Boolean(
+                currentUser?.productId && entry?.productId && currentUser.productId === entry.productId
+              );
+
               return (
                 <PricingPlanCard
                   key={plan.name}
-                  plan={plan}
+                  plan={displayPlan}
                   billingCycle={billingCycle}
                   index={index}
                   productId={entry?.productId}
+                  isCurrentPlan={isCurrentPlan}
                 />
               );
             })}

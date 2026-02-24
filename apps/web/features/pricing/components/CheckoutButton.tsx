@@ -8,13 +8,17 @@ type Props = {
   productId: string;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 };
 
-export function CheckoutButton({ productId, children, className }: Props) {
+export function CheckoutButton({ productId, children, className, disabled }: Props) {
   const { isSignedIn } = useUser();
   const createCheckout = useAction(api.payments.createCheckout);
 
   async function handleClick() {
+    if (disabled) {
+      return;
+    }
     if (!isSignedIn) {
       window.location.href = `/login`;
       return;
@@ -27,7 +31,7 @@ export function CheckoutButton({ productId, children, className }: Props) {
   }
 
   return (
-    <button onClick={handleClick} className={className}>
+    <button onClick={handleClick} className={className} disabled={disabled}>
       {children}
     </button>
   );

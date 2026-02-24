@@ -1,6 +1,9 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { checkout, customerPortal } from "./dodo";
+import { internal } from "./_generated/api";
+
+const TRIAL_DAYS = 7;
 
 export const createCheckout = action({
   args: {
@@ -15,6 +18,14 @@ export const createCheckout = action({
       metadata.clerkUserId = identity.subject;
     }
 
+    const user = identity
+      ? await ctx.runQuery(internal.users.getByExternalId, {
+          externalId: identity.subject,
+        })
+      : null;
+
+    const trialPeriodDays = user && !user.subscriptionId ? TRIAL_DAYS : 0;
+
     const session = await checkout(ctx, {
       payload: {
         product_cart: [
@@ -23,6 +34,9 @@ export const createCheckout = action({
             quantity: args.quantity ?? 1,
           },
         ],
+        subscription_data: {
+          trial_period_days: trialPeriodDays,
+        },
         return_url: args.returnUrl,
         billing_currency: "USD",
         feature_flags: {

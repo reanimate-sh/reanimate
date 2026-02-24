@@ -13,12 +13,12 @@ function resolvePlanName(
 
 function isAccessActive(
   status: string | undefined | null,
-  currentPeriodEnd: string | undefined | null
+  subscriptionPeriodEnd: string | undefined | null
 ): boolean {
   if (!status) return false;
   if (status === "active" || status === "paused") return true;
-  if (status === "cancelled" && currentPeriodEnd) {
-    return new Date(currentPeriodEnd) > new Date();
+  if (status === "cancelled" && subscriptionPeriodEnd) {
+    return new Date(subscriptionPeriodEnd) > new Date();
   }
   return false;
 }
@@ -35,7 +35,7 @@ export function BillingPage() {
 
   const hasAccess = isAccessActive(
     user?.subscriptionStatus,
-    user?.currentPeriodEnd
+    user?.subscriptionPeriodEnd
   );
   const isCancelledButActive =
     user?.subscriptionStatus === "cancelled" && hasAccess;
@@ -71,10 +71,10 @@ export function BillingPage() {
                 ? resolvePlanName(user?.productId, plans)
                 : "No active subscription"}
             </p>
-            {isCancelledButActive && user?.currentPeriodEnd && (
+            {isCancelledButActive && user?.subscriptionPeriodEnd && (
               <p className="mt-1 text-xs text-yellow-400/80">
                 Access until{" "}
-                {new Date(user.currentPeriodEnd).toLocaleDateString(undefined, {
+                {new Date(user.subscriptionPeriodEnd).toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
