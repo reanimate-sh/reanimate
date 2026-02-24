@@ -3,8 +3,8 @@
 import Link from "next/link";
 
 export const SOCIAL_LINKS = [
-  { href: "https://discord.gg/invite/FTq7WwYYJp", label: "Discord", id: "discord" as const },
-  { href: "https://x.com/reanimate_sh", label: "X", id: "x" as const },
+  { href: "https://discord.gg/mH6pd8MFzp", label: "Discord", id: "discord" as const },
+  { href: "https://x.com/reanimatedotsh", label: "X", id: "x" as const },
   { href: "https://www.linkedin.com/company/reanimate-sh", label: "LinkedIn", id: "linkedin" as const },
 ];
 
