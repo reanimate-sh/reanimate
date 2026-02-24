@@ -22,7 +22,7 @@ export async function allotCredits(
     )
     .first();
 
-  if (existing) return;
+  if (existing) return false;
 
   await db.insert("credits", {
     userId: args.userId,
@@ -33,4 +33,6 @@ export async function allotCredits(
     expiresAt: args.expiresAt,
     metadata: args.metadata,
   });
+
+  return true;
 }

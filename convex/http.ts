@@ -47,7 +47,7 @@ http.route({
         subscriptionId: payload.data.subscription_id,
         productId: payload.data.product_id ?? undefined,
         status: payload.data.status,
-        currentPeriodEnd: payload.data.next_billing_date
+        subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
       });
@@ -59,7 +59,7 @@ http.route({
         subscriptionId: payload.data.subscription_id,
         productId: payload.data.product_id ?? undefined,
         status: payload.data.status,
-        currentPeriodEnd: payload.data.next_billing_date
+        subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
       });
@@ -71,7 +71,7 @@ http.route({
         subscriptionId: payload.data.subscription_id,
         productId: payload.data.product_id ?? undefined,
         status: payload.data.status,
-        currentPeriodEnd: payload.data.next_billing_date
+        subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
       });
@@ -82,7 +82,7 @@ http.route({
         dodoCustomerId: payload.data.customer.customer_id,
         subscriptionId: payload.data.subscription_id,
         status: payload.data.status,
-        currentPeriodEnd: payload.data.next_billing_date
+        subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
       });

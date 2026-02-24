@@ -10,7 +10,10 @@ export default defineSchema({
     subscriptionId: v.optional(v.string()),
     subscriptionStatus: v.optional(v.string()),
     productId: v.optional(v.string()),
-    currentPeriodEnd: v.optional(v.string()),
+    subscriptionPeriodEnd: v.optional(v.string()),
+    subscriptionStartedAt: v.optional(v.string()),
+    nextCreditGrantAt: v.optional(v.string()),
+    creditScheduleVersion: v.optional(v.number()),
   })
     .index("byExternalId", ["externalId"])
     .index("byDodoCustomerId", ["dodoCustomerId"]),
