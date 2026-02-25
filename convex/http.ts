@@ -50,6 +50,9 @@ http.route({
         subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
 
@@ -61,6 +64,9 @@ http.route({
         status: payload.data.status,
         subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
+          : undefined,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
           : undefined,
       });
     },
@@ -74,6 +80,9 @@ http.route({
         subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
 
@@ -85,6 +94,9 @@ http.route({
         subscriptionPeriodEnd: payload.data.next_billing_date
           ? new Date(payload.data.next_billing_date).toISOString()
           : undefined,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
 
@@ -93,6 +105,9 @@ http.route({
         dodoCustomerId: payload.data.customer.customer_id,
         subscriptionId: payload.data.subscription_id,
         status: payload.data.status,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
 
@@ -101,6 +116,9 @@ http.route({
         dodoCustomerId: payload.data.customer.customer_id,
         subscriptionId: payload.data.subscription_id,
         status: payload.data.status,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
 
@@ -109,6 +127,9 @@ http.route({
         dodoCustomerId: payload.data.customer.customer_id,
         subscriptionId: payload.data.subscription_id,
         status: payload.data.status,
+        subscriptionStartedAt: payload.data.created_at
+          ? new Date(payload.data.created_at).toISOString()
+          : undefined,
       });
     },
   }),

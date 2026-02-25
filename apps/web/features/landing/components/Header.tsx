@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { ReanimateLogo } from "./icons/ReanimateLogo";
 
@@ -12,6 +14,7 @@ type HeaderProps = {
 
 export const Header = ({ showLogo = true }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isSignedIn } = useUser();
   const pathname = usePathname();
   const { scrollY } = useScroll();
 
@@ -71,20 +74,30 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
         animate={shellStyles}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <div className="flex items-center gap-2">
+        {isSignedIn ? (
           <Link
-            href="/login"
-            className="text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md border border-white/20 bg-white/5 px-6 py-1.75 font-medium text-white transition-all hover:scale-[1.02] hover:border-white/40 hover:bg-white/10 active:scale-[0.98]"
+            href="/app/home"
+            className="group/cta text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-white px-6 py-1.75 font-medium text-black transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
           >
-            Login
+            Go to app
+            <ArrowRight className="size-5 transition-transform duration-300 group-hover/cta:translate-x-1" />
           </Link>
-          <Link
-            href="/waitlist"
-            className="text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-white px-6 py-1.75 font-medium text-black transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
-          >
-            Join waitlist
-          </Link>
-        </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className="text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md border border-white/20 bg-white/5 px-6 py-1.75 font-medium text-white transition-all hover:scale-[1.02] hover:border-white/40 hover:bg-white/10 active:scale-[0.98]"
+            >
+              Login
+            </Link>
+            <Link
+              href="/waitlist"
+              className="text-lg inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-white px-6 py-1.75 font-medium text-black transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
+            >
+              Join waitlist
+            </Link>
+          </div>
+        )}
       </motion.div>
     </motion.header>
   );

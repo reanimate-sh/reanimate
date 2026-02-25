@@ -19,7 +19,8 @@
     "next": "^16.1.6",
     "ogl": "^1.0.11",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "three": "0.167.1"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.1.1",
@@ -27,6 +28,7 @@
     "@types/node": "^24.10.11",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.183.1",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
     "prettier": "^3.8.1",

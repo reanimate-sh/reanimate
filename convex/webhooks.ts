@@ -163,6 +163,7 @@ export const onSubscriptionActive = internalMutation({
     productId: v.optional(v.string()),
     status: v.string(),
     subscriptionPeriodEnd: v.optional(v.string()),
+    subscriptionStartedAt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (!args.clerkUserId) {
@@ -192,11 +193,17 @@ export const onSubscriptionActive = internalMutation({
       return;
     }
     const metadata = { planName: plan.name, billingCycle: plan.billingCycle };
+    const parsedStartedAt = args.subscriptionStartedAt
+      ? new Date(args.subscriptionStartedAt)
+      : undefined;
+    const startedAt =
+      parsedStartedAt && !Number.isNaN(parsedStartedAt.getTime())
+        ? parsedStartedAt
+        : new Date();
 
     if (plan.billingCycle === "annual" && args.status === "active") {
-      const now = new Date();
-      const nextGrantAt = nextAnchorAfter(now, now);
-      const sourceId = sourceIdForMonth(args.subscriptionId, now);
+      const nextGrantAt = nextAnchorAfter(startedAt, new Date());
+      const sourceId = sourceIdForMonth(args.subscriptionId, startedAt);
       const scheduleVersion = (user.creditScheduleVersion ?? 0) + 1;
 
       await ctx.db.patch("users", user._id, {
@@ -205,7 +212,7 @@ export const onSubscriptionActive = internalMutation({
         subscriptionStatus: args.status,
         productId: args.productId,
         subscriptionPeriodEnd: args.subscriptionPeriodEnd,
-        subscriptionStartedAt: now.toISOString(),
+        subscriptionStartedAt: startedAt.toISOString(),
         nextCreditGrantAt: nextGrantAt.toISOString(),
         creditScheduleVersion: scheduleVersion,
       });
@@ -233,6 +240,7 @@ export const onSubscriptionActive = internalMutation({
       subscriptionStatus: args.status,
       productId: args.productId,
       subscriptionPeriodEnd: args.subscriptionPeriodEnd,
+      subscriptionStartedAt: startedAt.toISOString(),
       creditScheduleVersion: (user.creditScheduleVersion ?? 0) + 1,
     });
 
@@ -257,6 +265,7 @@ export const onSubscriptionUpdated = internalMutation({
     productId: v.optional(v.string()),
     status: v.string(),
     subscriptionPeriodEnd: v.optional(v.string()),
+    subscriptionStartedAt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -281,6 +290,13 @@ export const onSubscriptionUpdated = internalMutation({
       ? getPlanByProductId(user.productId)
       : undefined;
     const isSameSubscription = user.subscriptionId === args.subscriptionId;
+    const parsedIncomingStartedAt = args.subscriptionStartedAt
+      ? new Date(args.subscriptionStartedAt)
+      : undefined;
+    const incomingStartedAt =
+      parsedIncomingStartedAt && !Number.isNaN(parsedIncomingStartedAt.getTime())
+        ? parsedIncomingStartedAt
+        : undefined;
 
     if (args.productId && !plan) {
       console.warn(
@@ -311,10 +327,16 @@ export const onSubscriptionUpdated = internalMutation({
         previousPlan?.billingCycle === "annual" &&
         !!user.subscriptionStartedAt;
 
-      const parsedAnchor = sameAnnualSubscription
-        ? new Date(user.subscriptionStartedAt!)
-        : now;
-      const anchor = Number.isNaN(parsedAnchor.getTime()) ? now : parsedAnchor;
+      const parsedExistingAnchor = user.subscriptionStartedAt
+        ? new Date(user.subscriptionStartedAt)
+        : undefined;
+      const existingAnchor =
+        parsedExistingAnchor && !Number.isNaN(parsedExistingAnchor.getTime())
+          ? parsedExistingAnchor
+          : undefined;
+      const anchor = sameAnnualSubscription
+        ? existingAnchor ?? incomingStartedAt ?? now
+        : incomingStartedAt ?? now;
       const nextGrantAt = nextAnchorAfter(anchor, now);
       const { amount: grantAmount, sourceId: grantSourceId } =
         resolveCreditGrantForUpdate({
@@ -361,6 +383,10 @@ export const onSubscriptionUpdated = internalMutation({
       subscriptionId: args.subscriptionId,
       subscriptionStatus: args.status,
       productId: effectiveProductId,
+      subscriptionStartedAt:
+        (isSameSubscription && user.subscriptionStartedAt) ||
+        incomingStartedAt?.toISOString() ||
+        new Date().toISOString(),
       creditScheduleVersion: (user.creditScheduleVersion ?? 0) + 1,
       ...(args.subscriptionPeriodEnd !== undefined
         ? { subscriptionPeriodEnd: args.subscriptionPeriodEnd }

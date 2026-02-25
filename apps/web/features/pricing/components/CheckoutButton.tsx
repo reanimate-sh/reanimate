@@ -25,7 +25,7 @@ export function CheckoutButton({ productId, children, className, disabled }: Pro
     }
     const session = await createCheckout({
       productId,
-      returnUrl: `${window.location.origin}/app/home`,
+      returnUrl: `${window.location.origin}/app`,
     });
     window.location.href = session.checkout_url;
   }

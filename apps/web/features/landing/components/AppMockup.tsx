@@ -18,7 +18,8 @@ import {
   WandSparkles,
   Type,
 } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import { CAL_BOOKING_URL } from "@/lib/constants";
 import { ReanimateLogo } from "./icons/ReanimateLogo";
 
 const geist = Geist({
@@ -749,7 +750,7 @@ export const AppMockup = () => {
             <>
               Excited to try it out? How about we{" "}
               <a
-                href="https://cal.com/sxmawl/chat"
+                href={CAL_BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white underline underline-offset-2 hover:text-zinc-200"

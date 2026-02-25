@@ -2,6 +2,7 @@
 
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../lib/convexApi";
+import { hasActiveSubscription } from "./util";
 
 function resolvePlanName(
   productId: string | undefined | null,
@@ -9,18 +10,6 @@ function resolvePlanName(
 ): string {
   if (!productId) return "Active subscription";
   return plans?.find((p) => p.productId === productId)?.name ?? productId;
-}
-
-function isAccessActive(
-  status: string | undefined | null,
-  subscriptionPeriodEnd: string | undefined | null
-): boolean {
-  if (!status) return false;
-  if (status === "active" || status === "paused") return true;
-  if (status === "cancelled" && subscriptionPeriodEnd) {
-    return new Date(subscriptionPeriodEnd) > new Date();
-  }
-  return false;
 }
 
 export function BillingPage() {
@@ -33,7 +22,7 @@ export function BillingPage() {
     window.location.href = portal.portal_url;
   }
 
-  const hasAccess = isAccessActive(
+  const hasAccess = hasActiveSubscription(
     user?.subscriptionStatus,
     user?.subscriptionPeriodEnd
   );
@@ -99,7 +88,7 @@ export function BillingPage() {
         </button>
       ) : (
         <a
-          href="/pricing"
+          href="/app/upgrade"
           className="block w-full rounded-lg bg-white px-4 py-2.5 text-center text-sm font-medium text-black hover:bg-white/90 transition-colors"
         >
           View plans
