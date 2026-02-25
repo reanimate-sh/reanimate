@@ -5,14 +5,23 @@ import { ArrowRight, Check, Info } from "lucide-react";
 import Link from "next/link";
 import type { BillingCycle, Plan } from "../types";
 import { getPlanPrice, getPlanSecondaryText, isRecurringPlan } from "../utils";
+import { CheckoutButton } from "./CheckoutButton";
 
 type PricingPlanCardProps = {
   plan: Plan;
   billingCycle: BillingCycle;
   index: number;
+  productId?: string;
+  isCurrentPlan?: boolean;
 };
 
-export const PricingPlanCard = ({ plan, billingCycle, index }: PricingPlanCardProps) => {
+export const PricingPlanCard = ({
+  plan,
+  billingCycle,
+  index,
+  productId,
+  isCurrentPlan,
+}: PricingPlanCardProps) => {
   const secondaryText = getPlanSecondaryText(plan, billingCycle);
   const isFeatured = Boolean(plan.isFeatured);
   const usesTeamsAccent = plan.accent === "teams";
@@ -38,6 +47,11 @@ export const PricingPlanCard = ({ plan, billingCycle, index }: PricingPlanCardPr
       <div className="mb-9 flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <h2 className="text-3xl font-medium tracking-tight">{plan.name}</h2>
+          {isCurrentPlan && (
+            <span className="rounded-full bg-green-400/20 px-3.5 py-1 text-xs font-bold tracking-widest text-green-300 uppercase">
+              Current plan
+            </span>
+          )}
           {isFeatured && (
             <span className="rounded-full bg-neutral-300/20 px-3.5 py-1 text-xs font-bold tracking-widest text-neutral-300 uppercase">
               Recommended
@@ -77,17 +91,34 @@ export const PricingPlanCard = ({ plan, billingCycle, index }: PricingPlanCardPr
         </div>
       </div>
 
-      <Link
-        href={plan.ctaHref}
-        className={`group/btn relative mb-10 flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl py-5 text-base font-medium transition-all duration-300 ${
-          isFeatured || usesTeamsAccent
-            ? "bg-white text-black hover:bg-neutral-200"
-            : "bg-white/10 text-white ring-1 ring-white/10 hover:bg-white/20"
-        }`}
-      >
-        {plan.ctaLabel}
-        <ArrowRight className="size-5 transition-transform group-hover/btn:translate-x-1" />
-      </Link>
+      {productId ? (
+        <CheckoutButton
+          productId={productId}
+          disabled={Boolean(isCurrentPlan)}
+          className={`group/btn relative mb-10 flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl py-5 text-base font-medium transition-all duration-300 ${
+            isCurrentPlan
+              ? "cursor-not-allowed bg-white/5 text-neutral-400 ring-1 ring-white/10"
+              : isFeatured || usesTeamsAccent
+              ? "bg-white text-black hover:bg-neutral-200"
+              : "bg-white/10 text-white ring-1 ring-white/10 hover:bg-white/20"
+          }`}
+        >
+          {isCurrentPlan ? "Current plan" : plan.ctaLabel}
+          {!isCurrentPlan && <ArrowRight className="size-5 transition-transform group-hover/btn:translate-x-1" />}
+        </CheckoutButton>
+      ) : (
+        <Link
+          href={plan.ctaHref}
+          className={`group/btn relative mb-10 flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl py-5 text-base font-medium transition-all duration-300 ${
+            isFeatured || usesTeamsAccent
+              ? "bg-white text-black hover:bg-neutral-200"
+              : "bg-white/10 text-white ring-1 ring-white/10 hover:bg-white/20"
+          }`}
+        >
+          {plan.ctaLabel}
+          <ArrowRight className="size-5 transition-transform group-hover/btn:translate-x-1" />
+        </Link>
+      )}
 
       <div className="mt-0">
         <p className="mb-7 text-sm font-bold tracking-widest text-neutral-500 uppercase">What&apos;s included</p>

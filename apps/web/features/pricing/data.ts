@@ -1,3 +1,4 @@
+import { CAL_BOOKING_URL } from "@/lib/constants";
 import type { FaqItem, Plan } from "./types";
 
 const trialEndDate = new Date();
@@ -68,7 +69,7 @@ export const PLANS: Plan[] = [
     name: "Teams",
     description: "Advanced features for collaborative video teams.",
     ctaLabel: "Contact us",
-    ctaHref: "mailto:contact@reanimate.sh",
+    ctaHref: CAL_BOOKING_URL,
     customPrice: "Custom",
     customSubtext: "For organizations with specific needs",
     accent: "teams",
