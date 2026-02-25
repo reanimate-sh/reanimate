@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { LandingPage } from "@/features/landing";
 
 const BASE_URL = "https://reanimate.sh";
@@ -84,7 +86,13 @@ const softwareAppSchema = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/app");
+  }
+
   return (
     <>
       <script

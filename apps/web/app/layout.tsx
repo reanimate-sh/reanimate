@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+import { SUPPORT_EMAIL } from "@/lib/constants";
 
 const BASE_URL = "https://reanimate.sh";
 
@@ -51,7 +52,7 @@ const organizationSchema = {
   description: "Turn your app into animated product videos with AI. Create demos, launch clips, and social content fast.",
   contactPoint: {
     "@type": "ContactPoint",
-    email: "contact@reanimate.sh",
+    email: SUPPORT_EMAIL,
     contactType: "customer support",
   },
 };

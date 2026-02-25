@@ -1,4 +1,4 @@
-import { CAL_BOOKING_URL } from "@/lib/constants";
+import { CAL_BOOKING_URL, SUPPORT_EMAIL } from "@/lib/constants";
 import type { FaqItem, Plan } from "./types";
 
 const trialEndDate = new Date();
@@ -105,6 +105,6 @@ export const FAQS: FaqItem[] = [
   {
     question: "Have another question?",
     answer:
-      "If you have any other questions, feel free to reach out to us at contact@reanimate.sh or book a call. We're here to help!",
+      `If you have any other questions, feel free to reach out to us at ${SUPPORT_EMAIL} or book a call. We're here to help!`,
   },
 ];

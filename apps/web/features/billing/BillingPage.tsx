@@ -1,15 +1,39 @@
 "use client";
 
 import { useAction, useQuery } from "convex/react";
+import { ArrowUpRight } from "lucide-react";
 import { api } from "../../lib/convexApi";
 import { hasActiveSubscription } from "./util";
 
-function resolvePlanName(
-  productId: string | undefined | null,
-  plans: { productId: string; name: string }[] | undefined
-): string {
-  if (!productId) return "Active subscription";
-  return plans?.find((p) => p.productId === productId)?.name ?? productId;
+function formatShortDate(date: string | undefined | null) {
+  if (!date) {
+    return null;
+  }
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function getDaysUntil(date: string | undefined | null) {
+  if (!date) {
+    return null;
+  }
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  const msInDay = 1000 * 60 * 60 * 24;
+  return Math.ceil((parsed.getTime() - Date.now()) / msInDay);
 }
 
 export function BillingPage() {
@@ -26,74 +50,145 @@ export function BillingPage() {
     user?.subscriptionStatus,
     user?.subscriptionPeriodEnd
   );
-  const isCancelledButActive =
-    user?.subscriptionStatus === "cancelled" && hasAccess;
+  const activePlan = plans?.find((plan) => plan.productId === user?.productId);
 
-  function statusBadge() {
-    const s = user?.subscriptionStatus;
-    if (!s) return { label: "inactive", className: "bg-white/5 text-white/40" };
-    if (s === "active") return { label: "active", className: "bg-green-500/10 text-green-400" };
-    if (s === "cancelled" && hasAccess)
-      return { label: "cancels soon", className: "bg-yellow-500/10 text-yellow-400" };
-    if (s === "on_hold")
-      return { label: "payment failed", className: "bg-red-500/10 text-red-400" };
-    return { label: s, className: "bg-white/5 text-white/40" };
+  const currentPlanName = hasAccess ? activePlan?.name ?? "Active subscription" : "No active subscription";
+
+  const status = (() => {
+    if (user?.subscriptionStatus === "active") {
+      return {
+        label: "Active",
+        textClassName: "text-emerald-400",
+        dotClassName: "bg-emerald-500",
+      };
+    }
+
+    if (user?.subscriptionStatus === "cancelled" && hasAccess) {
+      return {
+        label: "Cancels Soon",
+        textClassName: "text-yellow-400",
+        dotClassName: "bg-yellow-400",
+      };
+    }
+
+    if (user?.subscriptionStatus === "on_hold") {
+      return {
+        label: "Payment Failed",
+        textClassName: "text-red-400",
+        dotClassName: "bg-red-400",
+      };
+    }
+
+    return {
+      label: "Inactive",
+      textClassName: "text-neutral-400",
+      dotClassName: "bg-neutral-500",
+    };
+  })();
+
+  const billingInterval = activePlan?.billingCycle ?? "N/A";
+
+  const periodStart = formatShortDate(user?.subscriptionStartedAt);
+  const periodEnd = formatShortDate(user?.subscriptionPeriodEnd);
+  const billingPeriod = periodStart && periodEnd ? `${periodStart} — ${periodEnd}` : "N/A";
+
+  const nextRenewal = formatShortDate(user?.subscriptionPeriodEnd);
+  const daysUntilRenewal = getDaysUntil(user?.subscriptionPeriodEnd);
+
+  const projectLimit =
+    typeof activePlan?.projectLimit === "number"
+      ? `${activePlan.projectLimit} ${activePlan.projectLimit === 1 ? "Project" : "Projects"}`
+      : activePlan?.projectLimit === null
+        ? "Unlimited"
+        : "N/A";
+
+  const showUpgradeToPro = hasAccess && activePlan?.name !== "Pro";
+
+  async function handleUpgrade() {
+    window.location.href = "/app/upgrade";
   }
 
-  const badge = statusBadge();
-
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold">Billing &amp; Subscription</h1>
-        <p className="mt-1 text-sm text-white/60">
-          Manage your plan and payment details.
-        </p>
-      </div>
-
-      <div className="rounded-lg border border-white/10 p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Current plan</p>
-            <p className="mt-0.5 text-sm text-white/60">
-              {hasAccess
-                ? resolvePlanName(user?.productId, plans)
-                : "No active subscription"}
+    <div className="flex flex-col gap-8 py-2">
+      <section className="space-y-4">
+        <div className="flex items-end justify-between px-1">
+          <div className="space-y-1">
+            <p className="text-[10px] font-medium tracking-widest text-neutral-400 uppercase">
+              Current Plan
             </p>
-            {isCancelledButActive && user?.subscriptionPeriodEnd && (
-              <p className="mt-1 text-xs text-yellow-400/80">
-                Access until{" "}
-                {new Date(user.subscriptionPeriodEnd).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            )}
+            <h2 className="text-2xl font-normal tracking-tight text-white">{currentPlanName}</h2>
           </div>
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}
-          >
-            {badge.label}
-          </span>
+          <div className="flex items-center gap-2 pb-1">
+            <div className={`size-1.5 rounded-full ${status.dotClassName}`} />
+            <span className={`text-xs font-base ${status.textClassName}`}>{status.label}</span>
+          </div>
         </div>
-      </div>
 
-      {hasAccess ? (
+        <div className="rounded-xl border border-white/10 bg-white/5 p-1">
+          <div className="space-y-px overflow-hidden rounded-lg">
+            <div className="flex items-center justify-between bg-neutral-900/50 px-4 py-3.5">
+              <span className="text-xs font-light text-neutral-300">Billing Interval</span>
+              <span className="text-xs font-normal text-neutral-100 capitalize">{billingInterval}</span>
+            </div>
+            <div className="flex items-center justify-between bg-neutral-900/50 px-4 py-3.5">
+              <span className="text-xs font-light text-neutral-300">Billing Period</span>
+              <span className="text-xs font-normal text-neutral-100">{billingPeriod}</span>
+            </div>
+            <div className="flex items-center justify-between bg-neutral-900/50 px-4 py-3.5">
+              <span className="text-xs font-light text-neutral-300">Next Renewal</span>
+              <span className="text-xs font-normal text-neutral-100">
+                {nextRenewal ?? "N/A"}
+                {typeof daysUntilRenewal === "number" && daysUntilRenewal >= 0 ? (
+                  <span className="ml-1.5 font-light text-neutral-500">(in {daysUntilRenewal} days)</span>
+                ) : null}
+              </span>
+            </div>
+            <div className="flex items-center justify-between bg-neutral-900/50 px-4 py-3.5">
+              <span className="text-xs font-light text-neutral-300">Project Limit</span>
+              <span className="text-xs font-normal text-neutral-100">{projectLimit}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-3">
         <button
           onClick={handleManageSubscription}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition-colors"
+          disabled={!hasAccess}
+          className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 transition-all hover:bg-white/10 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Manage subscription
+          <div className="flex flex-col items-start gap-0.5">
+            <span className="text-left text-sm font-normal text-white">Manage Subscription</span>
+            <span className="text-[10px] font-light text-neutral-400">
+              Invoices, payment methods, and cancellation
+            </span>
+          </div>
+          <ArrowUpRight className="size-4 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </button>
-      ) : (
-        <a
-          href="/app/upgrade"
-          className="block w-full rounded-lg bg-white px-4 py-2.5 text-center text-sm font-medium text-black hover:bg-white/90 transition-colors"
-        >
-          View plans
-        </a>
-      )}
+
+        {showUpgradeToPro ? (
+          <button
+            onClick={handleUpgrade}
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-400 transition-all hover:bg-blue-500/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Upgrade to Pro
+          </button>
+        ) : !hasAccess ? (
+          <button
+            onClick={handleUpgrade}
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-400 transition-all hover:bg-blue-500/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            View plans
+          </button>
+        ) : null}
+      </section>
+
+      <footer className="px-1 text-[10px] font-light leading-relaxed text-neutral-500">
+        <p>
+          Subscription managed via Dodo Payments. Changes to your plan will take effect at the
+          start of your next billing cycle.
+        </p>
+      </footer>
     </div>
   );
 }

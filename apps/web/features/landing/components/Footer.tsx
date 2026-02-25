@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { SUPPORT_EMAIL_MAILTO } from "@/lib/constants";
 import { ReanimateLogo } from "./icons/ReanimateLogo";
 import { SocialLinks } from "./SocialLinks";
 
@@ -78,7 +79,7 @@ export const Footer = () => (
           <h4 className="font-landing mb-6 text-base font-normal tracking-wide text-white">Company</h4>
           <ul className="space-y-4">
             <li>
-              <Link href="mailto:contact@reanimate.sh" className="block w-fit font-thin text-neutral-500 transition-colors hover:text-white">
+              <Link href={SUPPORT_EMAIL_MAILTO} className="block w-fit font-thin text-neutral-500 transition-colors hover:text-white">
                 Contact
               </Link>
             </li>
