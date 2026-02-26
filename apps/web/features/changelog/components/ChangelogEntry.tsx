@@ -58,7 +58,7 @@ export const ChangelogEntry = ({
                     >
                       <span className="shrink-0 text-neutral-400">-</span>
                       <span className="flex-1 font-normal">
-                        {label ? <strong className="text-md font-medium text-white">{label}</strong> : null}
+                        {label && <strong className="text-md font-medium text-white">{label}</strong>}
                         {description ? ` ${description}` : ""}
                       </span>
                     </li>
@@ -69,7 +69,7 @@ export const ChangelogEntry = ({
           ))}
         </div>
 
-        {entry.housekeepingLabel ? (
+        {entry.housekeepingLabel && (
           <>
             <button
               type="button"
@@ -102,7 +102,7 @@ export const ChangelogEntry = ({
 
                   return (
                     <li key={`${entry.version}-${item}`} className="font-landing">
-                      {label ? <p className="text-sm leading-tight font-medium text-white">{label}</p> : null}
+                      {label && <p className="text-sm leading-tight font-medium text-white">{label}</p>}
                       <p className="mt-1 text-sm leading-relaxed font-light text-white/70">
                         {description || item}
                       </p>
@@ -112,7 +112,7 @@ export const ChangelogEntry = ({
               </ul>
             </motion.div>
           </>
-        ) : null}
+        )}
       </div>
     </article>
   );

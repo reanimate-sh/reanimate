@@ -22,7 +22,7 @@ export const createCheckout = action({
       ? await ctx.runQuery(internal.users.getByExternalId, {
           externalId: identity.subject,
         })
-      : null;
+      : undefined;
 
     const trialPeriodDays = user && !user.subscriptionId ? TRIAL_DAYS : 0;
 

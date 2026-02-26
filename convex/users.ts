@@ -19,7 +19,7 @@ export const upsertFromClerk = internalMutation({
     };
 
     const user = await userByExternalId(ctx, data.id);
-    if (user === null) {
+    if (!user) {
       await ctx.db.insert("users", userAttributes);
     } else {
       await ctx.db.patch("users", user._id, userAttributes);
@@ -32,7 +32,7 @@ export const deleteFromClerk = internalMutation({
   async handler(ctx, { clerkUserId }) {
     const user = await userByExternalId(ctx, clerkUserId);
 
-    if (user !== null) {
+    if (user) {
       await ctx.db.delete("users", user._id);
     } else {
       console.warn(
@@ -50,7 +50,7 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
+  if (!identity) {
     return null;
   }
   return await userByExternalId(ctx, identity.subject);

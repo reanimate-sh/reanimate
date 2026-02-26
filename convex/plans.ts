@@ -5,7 +5,7 @@ export type PlanDefinition = {
   name: "Creator" | "Pro";
   billingCycle: "monthly" | "annual";
   credits: number;
-  projectLimit: number | null;
+  projectLimit?: number;
 };
 
 export const PLAN_PRODUCT_IDS = (): PlanDefinition[] => [
@@ -28,14 +28,12 @@ export const PLAN_PRODUCT_IDS = (): PlanDefinition[] => [
     name: "Pro",
     billingCycle: "monthly" as const,
     credits: 10000,
-    projectLimit: null,
   },
   {
     productId: process.env.DODO_PRO_ANNUAL_PRODUCT_ID!,
     name: "Pro",
     billingCycle: "annual" as const,
     credits: 10000,
-    projectLimit: null,
   },
 ];
 

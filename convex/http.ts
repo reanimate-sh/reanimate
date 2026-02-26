@@ -32,7 +32,7 @@ http.route({
         console.log("Ignored Clerk webhook event", event.type);
     }
 
-    return new Response(null, { status: 200 });
+    return new Response(undefined, { status: 200 });
   }),
 });
 
@@ -135,7 +135,7 @@ http.route({
   }),
 });
 
-async function validateRequest(req: Request): Promise<WebhookEvent | null> {
+async function validateRequest(req: Request): Promise<WebhookEvent | undefined> {
   const payloadString = await req.text();
   const svixHeaders = {
     "svix-id": req.headers.get("svix-id")!,
@@ -147,7 +147,7 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
     return wh.verify(payloadString, svixHeaders) as unknown as WebhookEvent;
   } catch (error) {
     console.error("Error verifying webhook event", error);
-    return null;
+    return undefined;
   }
 }
 

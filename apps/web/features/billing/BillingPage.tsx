@@ -5,14 +5,14 @@ import { ArrowUpRight } from "lucide-react";
 import { api } from "../../lib/convexApi";
 import { hasActiveSubscription } from "./util";
 
-function formatShortDate(date: string | undefined | null) {
+function formatShortDate(date: string | undefined) {
   if (!date) {
-    return null;
+    return undefined;
   }
 
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) {
-    return null;
+    return undefined;
   }
 
   return parsed.toLocaleDateString("en-US", {
@@ -22,14 +22,14 @@ function formatShortDate(date: string | undefined | null) {
   });
 }
 
-function getDaysUntil(date: string | undefined | null) {
+function getDaysUntil(date: string | undefined) {
   if (!date) {
-    return null;
+    return undefined;
   }
 
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) {
-    return null;
+    return undefined;
   }
 
   const msInDay = 1000 * 60 * 60 * 24;
@@ -98,11 +98,13 @@ export function BillingPage() {
   const projectLimit =
     typeof activePlan?.projectLimit === "number"
       ? `${activePlan.projectLimit} ${activePlan.projectLimit === 1 ? "Project" : "Projects"}`
-      : activePlan?.projectLimit === null
+      : activePlan
         ? "Unlimited"
         : "N/A";
 
   const showUpgradeToPro = hasAccess && activePlan?.name !== "Pro";
+  const shouldShowUpgradeButton = showUpgradeToPro || !hasAccess;
+  const upgradeButtonLabel = showUpgradeToPro ? "Upgrade to Pro" : "View plans";
 
   async function handleUpgrade() {
     window.location.href = "/app/upgrade";
@@ -138,9 +140,9 @@ export function BillingPage() {
               <span className="text-xs font-light text-neutral-300">Next Renewal</span>
               <span className="text-xs font-normal text-neutral-100">
                 {nextRenewal ?? "N/A"}
-                {typeof daysUntilRenewal === "number" && daysUntilRenewal >= 0 ? (
+                {typeof daysUntilRenewal === "number" && daysUntilRenewal >= 0 && (
                   <span className="ml-1.5 font-light text-neutral-500">(in {daysUntilRenewal} days)</span>
-                ) : null}
+                )}
               </span>
             </div>
             <div className="flex items-center justify-between bg-neutral-900/50 px-4 py-3.5">
@@ -166,21 +168,14 @@ export function BillingPage() {
           <ArrowUpRight className="size-4 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </button>
 
-        {showUpgradeToPro ? (
+        {shouldShowUpgradeButton && (
           <button
             onClick={handleUpgrade}
             className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-400 transition-all hover:bg-blue-500/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Upgrade to Pro
+            {upgradeButtonLabel}
           </button>
-        ) : !hasAccess ? (
-          <button
-            onClick={handleUpgrade}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-400 transition-all hover:bg-blue-500/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            View plans
-          </button>
-        ) : null}
+        )}
       </section>
 
       <footer className="px-1 text-[10px] font-light leading-relaxed text-neutral-500">

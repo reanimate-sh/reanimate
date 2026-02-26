@@ -105,15 +105,15 @@ const LightRays = ({
   className = "",
 }: LightRaysProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const rendererRef = useRef<Renderer | null>(null);
-  const uniformsRef = useRef<UniformMap | null>(null);
-  const meshRef = useRef<Mesh | null>(null);
+  const rendererRef = useRef<Renderer | undefined>(undefined);
+  const uniformsRef = useRef<UniformMap | undefined>(undefined);
+  const meshRef = useRef<Mesh | undefined>(undefined);
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 });
   const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 });
-  const animationFrameRef = useRef<number | null>(null);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const cleanupRef = useRef<(() => void) | undefined>(undefined);
   const [isVisible, setIsVisible] = useState(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const observerRef = useRef<IntersectionObserver | undefined>(undefined);
 
   useEffect(() => {
     if (!containerRef.current || observerRef.current) return;
@@ -129,7 +129,7 @@ const LightRays = ({
 
     return () => {
       observerRef.current?.disconnect();
-      observerRef.current = null;
+      observerRef.current = undefined;
     };
   }, []);
 
@@ -137,7 +137,7 @@ const LightRays = ({
     if (!isVisible || !containerRef.current) return;
 
     cleanupRef.current?.();
-    cleanupRef.current = null;
+    cleanupRef.current = undefined;
 
     let cancelled = false;
 
@@ -337,7 +337,7 @@ void main() {
       cleanupRef.current = () => {
         if (animationFrameRef.current) {
           window.cancelAnimationFrame(animationFrameRef.current);
-          animationFrameRef.current = null;
+          animationFrameRef.current = undefined;
         }
 
         window.removeEventListener("resize", resize);
@@ -352,9 +352,9 @@ void main() {
           console.warn("Error during WebGL cleanup:", error);
         }
 
-        rendererRef.current = null;
-        uniformsRef.current = null;
-        meshRef.current = null;
+        rendererRef.current = undefined;
+        uniformsRef.current = undefined;
+        meshRef.current = undefined;
       };
     };
 
@@ -363,7 +363,7 @@ void main() {
     return () => {
       cancelled = true;
       cleanupRef.current?.();
-      cleanupRef.current = null;
+      cleanupRef.current = undefined;
     };
   }, [
     isVisible,

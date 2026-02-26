@@ -179,7 +179,7 @@ const HeaderWorkspaceActions = () => {
           <span>Need any help?</span>
         </button>
 
-        {isHelpPopoverOpen ? (
+        {isHelpPopoverOpen && (
           <div
             role="dialog"
             aria-label="Need any help"
@@ -221,7 +221,7 @@ const HeaderWorkspaceActions = () => {
               </div>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
       <div className="group hidden h-8 items-center rounded-full border border-white/10 bg-white/5 px-4 transition-colors hover:bg-white/10 md:flex">
         <span className="text-sm font-medium text-white/90 transition-colors group-hover:text-white">
@@ -241,7 +241,7 @@ export const AppHeader = ({ homeHref = "/", showWorkspaceActions = false }: AppH
       <span className="font-landing text-xl font-medium tracking-tight text-white">Reanimate</span>
     </Link>
     <div className="flex items-center gap-3 md:gap-4">
-      {showWorkspaceActions ? <HeaderWorkspaceActions /> : null}
+      {showWorkspaceActions && <HeaderWorkspaceActions />}
       <div className="origin-top-right scale-125">
         <UserButton appearance={clerkAppearance} userProfileProps={{ appearance: clerkAppearance }}>
           <UserButton.UserProfilePage label="Billing" url="billing" labelIcon={billingIcon}>

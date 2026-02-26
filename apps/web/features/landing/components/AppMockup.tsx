@@ -194,7 +194,7 @@ const mediaItemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-const cn = (...classes: Array<string | false | null | undefined>) => classes.filter(Boolean).join(" ");
+const cn = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(" ");
 
 const ShimmerText = ({ children, className }: { children: string; className?: string }) => (
   <motion.span

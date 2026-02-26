@@ -1,6 +1,6 @@
 export function hasActiveSubscription(
-  status: string | undefined | null,
-  subscriptionPeriodEnd: string | undefined | null
+  status: string | undefined,
+  subscriptionPeriodEnd: string | undefined
 ): boolean {
   if (!status) return false;
   if (status === "active" || status === "paused") return true;

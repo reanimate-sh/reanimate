@@ -8,10 +8,12 @@ import { ChangelogEntry } from "./components/ChangelogEntry";
 import { CHANGELOG_ENTRIES } from "./data";
 
 export const ChangelogPage = () => {
-  const [openHousekeepingVersion, setOpenHousekeepingVersion] = useState<string | null>(null);
+  const [openHousekeepingVersion, setOpenHousekeepingVersion] = useState<string | undefined>(
+    undefined,
+  );
 
   const handleToggleHousekeeping = (version: string) => {
-    setOpenHousekeepingVersion((currentVersion) => (currentVersion === version ? null : version));
+    setOpenHousekeepingVersion((currentVersion) => (currentVersion === version ? undefined : version));
   };
 
   return (
@@ -51,7 +53,7 @@ export const ChangelogPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay: index * 0.015 }}
               >
-                {index ? <div className="border-t border-white/30" /> : null}
+                {index > 0 && <div className="border-t border-white/30" />}
                 <ChangelogEntry
                   entry={entry}
                   isHousekeepingOpen={openHousekeepingVersion === entry.version}
