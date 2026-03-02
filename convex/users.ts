@@ -1,11 +1,86 @@
-import { internalMutation, internalQuery, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  MutationCtx,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
+import {
+  encrypt,
+  encryptIntegrations,
+  decryptIntegrations,
+  sanitizeIntegrations,
+} from "./lib/encryption";
 
 export const current = query({
-  args: {},
-  handler: async (ctx) => {
-    return await getCurrentUser(ctx);
+  args: { decrypt: v.optional(v.boolean()) },
+  handler: async (ctx, { decrypt }) => {
+    const user = await getCurrentUser(ctx);
+    if (!user || !user.integrations) return user;
+    const integrations = user.integrations as Record<string, unknown>;
+    return {
+      ...user,
+      integrations: decrypt
+        ? await decryptIntegrations(integrations)
+        : sanitizeIntegrations(integrations),
+    };
+  },
+});
+
+export const updateIntegration = mutation({
+  args: { name: v.string(), data: v.any() },
+  handler: async (ctx, { name, data }) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    const existing = (user.integrations as Record<string, unknown>) ?? {};
+
+    if (data === null) {
+      const { [name]: _, ...rest } = existing;
+      await ctx.db.patch("users", user._id, { integrations: rest });
+      return;
+    }
+
+    const encryptedEntry = await encryptIntegrations({ [name]: data });
+    await ctx.db.patch("users", user._id, {
+      integrations: { ...existing, ...encryptedEntry },
+    });
+  },
+});
+
+export const updateLLMProvider = mutation({
+  args: {
+    provider: v.string(),
+    apiKey: v.union(v.string(), v.null()),
+  },
+  handler: async (ctx, { provider, apiKey }) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    const existing = (user.integrations as Record<string, unknown>) ?? {};
+    const existingProviders = (existing.llmProviders as Record<string, unknown>[] | undefined) ?? [];
+
+    const filtered = existingProviders.filter(
+      (p) => p.provider !== provider
+    );
+
+    const updatedProviders =
+      apiKey === null
+        ? filtered
+        : [
+            ...filtered,
+            {
+              provider,
+              apiKey: await encrypt(apiKey.trim()),
+              connectedAt: new Date().toISOString(),
+            },
+          ];
+
+    await ctx.db.patch("users", user._id, {
+      integrations: {
+        ...existing,
+        llmProviders: updatedProviders.length ? updatedProviders : undefined,
+      },
+    });
   },
 });
 
@@ -42,21 +117,32 @@ export const deleteFromClerk = internalMutation({
   },
 });
 
-export async function getCurrentUserOrThrow(ctx: QueryCtx) {
-  const userRecord = await getCurrentUser(ctx);
-  if (!userRecord) throw new Error("Can't get current user");
-  return userRecord;
+type AuthCtx = QueryCtx | MutationCtx;
+
+export async function getCurrentUserOrThrow(ctx: AuthCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await userByExternalId(ctx, identity.subject);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
 }
 
-export async function getCurrentUser(ctx: QueryCtx) {
+export async function getCurrentUser(ctx: AuthCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     return null;
   }
+
   return await userByExternalId(ctx, identity.subject);
 }
 
-async function userByExternalId(ctx: QueryCtx, externalId: string) {
+async function userByExternalId(ctx: AuthCtx, externalId: string) {
   return await ctx.db
     .query("users")
     .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
