@@ -20,7 +20,7 @@ export const PricingPage = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(DEFAULT_BILLING_CYCLE);
   const [openQuestionIndex, setOpenQuestionIndex] = useState(DEFAULT_OPEN_FAQ_INDEX);
   const plans = useQuery(api.plans.getPlans);
-  const currentUser = useQuery(api.users.current);
+  const currentUser = useQuery(api.users.current, {});
   const { scrollY } = useScroll();
   const faqDarkenOpacity = useTransform(scrollY, [0, 560, 920, 1320], [0, 0, 0.28, 0.46]);
   const hasUsedTrial = Boolean(currentUser?.subscriptionId);

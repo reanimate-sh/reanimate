@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ServerPage() {
-  const preloaded = await preloadQuery(api.users.current, {});
+  const preloaded = await preloadQuery(api.users.current, {}, {});
 
   const data = preloadedQueryResult(preloaded);
 

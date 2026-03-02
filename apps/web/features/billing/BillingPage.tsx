@@ -37,7 +37,7 @@ function getDaysUntil(date: string | undefined) {
 }
 
 export function BillingPage() {
-  const user = useQuery(api.users.current);
+  const user = useQuery(api.users.current, {});
   const plans = useQuery(api.plans.getPlans);
   const getCustomerPortal = useAction(api.payments.getCustomerPortal);
 

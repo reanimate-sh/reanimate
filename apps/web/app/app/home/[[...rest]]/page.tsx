@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 import { useQuery } from "convex/react";
+import { HomePromptComposer } from "@reanimate/ui/components/home/HomePromptComposer";
 import { AppBackground } from "@/components/AppBackground";
 import { AppHeader } from "@/features/app/components/AppHeader";
-import { HomePromptComposer } from "@/features/app/components/HomePromptComposer";
 import { api } from "@/lib/convexApi";
 
 export default function HomePage() {
-  const user = useQuery(api.users.current);
+  const user = useQuery(api.users.current, {});
 
   const firstName = useMemo(() => {
     const name = user?.name?.trim();
@@ -30,7 +30,7 @@ export default function HomePage() {
       <div className="relative z-10 flex min-h-screen flex-col">
         <AppHeader homeHref="/app/home" showWorkspaceActions />
 
-        <main className="flex w-full flex-1 items-start justify-center px-4 pt-16 pb-14 text-center sm:px-6 md:px-8 md:pt-32">
+        <main className="flex w-full flex-1 items-start justify-center px-4 pt-[20vh] pb-14 text-center sm:px-6 md:px-8 md:pt-[25vh]">
           <section className="w-full max-w-3xl">
             <h1 className="font-landing text-2xl font-medium text-white sm:text-4xl">
               {headline}

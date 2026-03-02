@@ -115,7 +115,7 @@ type AppHeaderProps = {
 };
 
 const HeaderWorkspaceActions = () => {
-  const user = useQuery(api.users.current);
+  const user = useQuery(api.users.current, {});
   const plans = useQuery(api.plans.getPlans);
   const helpPopoverRef = useRef<HTMLDivElement | null>(null);
 

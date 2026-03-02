@@ -8,7 +8,7 @@ import { hasActiveSubscription } from "@/features/billing/util";
 
 export default function AppEntryPage() {
   const router = useRouter();
-  const user = useQuery(api.users.current);
+  const user = useQuery(api.users.current, {});
   const hasAccess = hasActiveSubscription(user?.subscriptionStatus, user?.subscriptionPeriodEnd);
 
   useEffect(() => {

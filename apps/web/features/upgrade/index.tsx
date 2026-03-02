@@ -22,7 +22,7 @@ export const UpgradePage = () => {
   const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(DEFAULT_BILLING_CYCLE);
   const plans = useQuery(api.plans.getPlans);
-  const currentUser = useQuery(api.users.current);
+  const currentUser = useQuery(api.users.current, {});
   const hasAccess = hasActiveSubscription(
     currentUser?.subscriptionStatus,
     currentUser?.subscriptionPeriodEnd
