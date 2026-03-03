@@ -2,11 +2,14 @@
 
 import { ArrowUp } from "lucide-react";
 import { type FormEvent, useState } from "react";
-import { ModelSelector } from "../shared/ModelSelector";
+import {
+  ModelSelector,
+  type ModelSelectorValue,
+} from "../shared/ModelSelector";
 
 export const HomePromptComposer = () => {
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState<string>();
+  const [model, setModel] = useState<ModelSelectorValue>();
 
   const canSubmit = prompt.trim().length > 0;
 

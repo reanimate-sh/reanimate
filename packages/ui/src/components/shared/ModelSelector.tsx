@@ -22,14 +22,26 @@ type Model = {
 };
 
 type Provider = {
+  id?: string;
+  name?: string;
   models: Record<string, Model>;
 };
 
-type ModelRegistryResponse = {
-  ideavo?: Provider;
+type ModelRegistryResponse = Record<string, Provider>;
+
+export type ModelSelectorValue = {
+  providerID: string;
+  modelID: string;
 };
 
-const MODELS_ENDPOINT = "https://models.ideavo.ai/api.json?providers=ideavo";
+type ProviderModel = {
+  providerID: string;
+  providerName: string;
+  model: Model;
+};
+
+const MODELS_ENDPOINT = "https://models.ideavo.ai/api.json";
+const MODEL_PROVIDERS = "ideavo";
 
 const getIconName = (family?: string) => {
   if (!family) return "stealth";
@@ -58,21 +70,23 @@ const getFamilyIconClassName = (family?: string) => {
   return "size-4 shrink-0 object-contain dark:invert";
 };
 
-const getDefaultModelId = (models: Model[]) => {
-  const preferred = models.find((model) => model.id === "anthropic/claude-sonnet-4-6");
-  return preferred?.id ?? models[0]?.id;
+const getDefaultModel = (models: ProviderModel[]) => {
+  const preferred = models.find(
+    ({ model }) => model.id === "anthropic/claude-sonnet-4-6",
+  );
+  return preferred ?? models[0];
 };
 
 interface ModelSelectorProps {
-  value?: string;
-  onChange: (modelId: string) => void;
+  value?: ModelSelectorValue;
+  onChange: (model: ModelSelectorValue) => void;
   disabled?: boolean;
   className?: string;
 }
 
 export const ModelSelector = ({ value, onChange, disabled, className }: ModelSelectorProps) => {
   const [open, setOpen] = useState(false);
-  const [models, setModels] = useState<Model[]>([]);
+  const [models, setModels] = useState<ProviderModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +98,11 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(`${MODELS_ENDPOINT}&t=${Date.now()}`, {
+        const url = new URL(MODELS_ENDPOINT);
+        url.searchParams.set("providers", MODEL_PROVIDERS);
+        url.searchParams.set("t", `${Date.now()}`);
+
+        const response = await fetch(url.toString(), {
           cache: "no-store",
           signal: controller.signal,
         });
@@ -94,9 +112,21 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
         }
 
         const payload = (await response.json()) as ModelRegistryResponse;
-        const list = Object.values(payload.ideavo?.models ?? {})
-          .filter((model) => model.status !== "deprecated" && model.tool_call !== false)
-          .sort((a, b) => a.name.localeCompare(b.name));
+        const list = Object.entries(payload)
+          .flatMap(([providerKey, provider]) => {
+            if (!provider || typeof provider !== "object") {
+              return [];
+            }
+            const providerID = provider.id ?? providerKey;
+            const providerName = provider.name ?? providerID;
+            return Object.values(provider.models ?? {}).map((model) => ({
+              providerID,
+              providerName,
+              model,
+            }));
+          })
+          .filter(({ model }) => model.status !== "deprecated" && model.tool_call !== false)
+          .sort((a, b) => a.model.name.localeCompare(b.model.name));
 
         setModels(list);
       } catch (err) {
@@ -124,17 +154,29 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
       return;
     }
 
-    const hasCurrentValue = value ? models.some((model) => model.id === value) : false;
+    const hasCurrentValue = value
+      ? models.some(
+          (entry) =>
+            entry.providerID === value.providerID && entry.model.id === value.modelID,
+        )
+      : false;
     if (!hasCurrentValue) {
-      const nextModelId = getDefaultModelId(models);
-      if (nextModelId) {
-        onChange(nextModelId);
+      const nextModel = getDefaultModel(models);
+      if (nextModel) {
+        onChange({
+          providerID: nextModel.providerID,
+          modelID: nextModel.model.id,
+        });
       }
     }
   }, [isLoading, models, onChange, value]);
 
   const selectedModel = useMemo(
-    () => models.find((model) => model.id === value) ?? null,
+    () =>
+      models.find(
+        (entry) =>
+          entry.providerID === value?.providerID && entry.model.id === value?.modelID,
+      ) ?? null,
     [models, value],
   );
 
@@ -142,7 +184,7 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
     ? "Loading models..."
     : error
       ? "Model list unavailable"
-      : (selectedModel?.name ?? "Select model");
+      : (selectedModel?.model.name ?? "Select model");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -156,8 +198,8 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
           )}
         >
           {selectedModel ? (
-            <svg className={getFamilyIconClassName(selectedModel.family)}>
-              <use href={`/models.svg${getFamilyIcon(selectedModel.family)}`} />
+            <svg className={getFamilyIconClassName(selectedModel.model.family)}>
+              <use href={`/models.svg${getFamilyIcon(selectedModel.model.family)}`} />
             </svg>
           ) : null}
           <span className="max-w-[170px] truncate">{label}</span>
@@ -182,23 +224,28 @@ export const ModelSelector = ({ value, onChange, disabled, className }: ModelSel
             <CommandList className="max-h-60">
               <CommandEmpty className="text-sm text-white/40 py-4">No models found.</CommandEmpty>
               <CommandGroup>
-                {models.map((model) => {
-                  const isSelected = model.id === selectedModel?.id;
+                {models.map((entry) => {
+                  const isSelected =
+                    entry.providerID === selectedModel?.providerID &&
+                    entry.model.id === selectedModel?.model.id;
 
                   return (
                     <CommandItem
-                      key={model.id}
-                      value={model.name}
+                      key={`${entry.providerID}/${entry.model.id}`}
+                      value={`${entry.model.name} ${entry.providerName} ${entry.model.id}`}
                       onSelect={() => {
-                        onChange(model.id);
+                        onChange({
+                          providerID: entry.providerID,
+                          modelID: entry.model.id,
+                        });
                         setOpen(false);
                       }}
                       className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm text-white/85 data-[selected=true]:bg-white/10 data-[selected=true]:text-white/85 cursor-pointer"
                     >
-                      <svg className={getFamilyIconClassName(model.family)}>
-                        <use href={`/models.svg${getFamilyIcon(model.family)}`} />
+                      <svg className={getFamilyIconClassName(entry.model.family)}>
+                        <use href={`/models.svg${getFamilyIcon(entry.model.family)}`} />
                       </svg>
-                      <span className="flex-1 truncate">{model.name}</span>
+                      <span className="flex-1 truncate">{entry.model.name}</span>
                       {isSelected ? <Check className="size-3.5 text-white" /> : null}
                     </CommandItem>
                   );

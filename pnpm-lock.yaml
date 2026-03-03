@@ -39,6 +39,9 @@ importers:
       '@clerk/themes':
         specifier: ^2.4.53
         version: 2.4.53(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@reanimate/opencode':
+        specifier: workspace:*
+        version: link:../../packages/opencode
       '@reanimate/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -99,6 +102,34 @@ importers:
         version: 4.1.18
       typescript:
         specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/opencode:
+    dependencies:
+      '@opencode-ai/sdk':
+        specifier: 1.1.65
+        version: 1.1.65
+      '@reanimate/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react:
+        specifier: ^0.469.0
+        version: 0.469.0(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.0.0
         version: 5.9.3
 
   packages/ui:
@@ -760,6 +791,9 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@opencode-ai/sdk@1.1.65':
+    resolution: {integrity: sha512-XlpgQJQ5WwO4tYgyyHoTT0NAB5/1StXonabVUAYVpW0JdtbwWFSdFEaLkWx6CU7MNW6ELP+SMC4n6wWO6zRW8Q==}
 
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
@@ -3837,6 +3871,8 @@ snapshots:
       fastq: 1.20.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@opencode-ai/sdk@1.1.65': {}
 
   '@radix-ui/number@1.1.1': {}
 
