@@ -6,7 +6,7 @@ import { api } from "@/lib/convexApi";
 export default function Home({
   preloaded,
 }: {
-  preloaded: Preloaded<typeof api.users.current, {}>;
+  preloaded: Preloaded<typeof api.users.current>;
 }) {
   const user = usePreloadedQuery(preloaded);
   return (
