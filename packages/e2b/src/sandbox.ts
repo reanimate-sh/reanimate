@@ -1,5 +1,19 @@
 import { Sandbox } from "e2b";
 import { LRUCache } from "lru-cache";
+import { setupGitConfig } from "./utils";
+import { downloadFromR2 } from "./r2";
+
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  let lastError: unknown;
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
 
 const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -56,7 +70,7 @@ async function _getSandboxInner(opts: {
 
   if (sandboxId) {
     try {
-      const sandbox = await Sandbox.connect(sandboxId, { apiKey, timeoutMs: TIMEOUT_MS });
+      const sandbox = await withRetry(() => Sandbox.connect(sandboxId, { apiKey, timeoutMs: TIMEOUT_MS }));
       setCached(projectId, sandbox.sandboxId, apiKey);
       return sandbox;
     } catch {
@@ -64,7 +78,7 @@ async function _getSandboxInner(opts: {
     }
   }
 
-  const sandbox = await Sandbox.betaCreate(templateId, {
+  const sandbox = await withRetry(() => Sandbox.betaCreate(templateId, {
     apiKey,
     timeoutMs: TIMEOUT_MS,
     autoPause: true,
@@ -72,18 +86,24 @@ async function _getSandboxInner(opts: {
       ...(userId && { userId }),
       ...(projectId && { projectId }),
     },
-  });
+  }));
 
   setCached(projectId, sandbox.sandboxId, apiKey);
+  await setupSandbox(sandbox, projectId);
   await onCreated?.(sandbox.sandboxId, templateId);
   return sandbox;
+}
+
+async function setupSandbox(sandbox: Sandbox, projectId: string): Promise<void> {
+  await setupGitConfig(sandbox);
+  await downloadFromR2(sandbox, projectId).catch(() => {});
 }
 
 /**
  * Connect directly to a sandbox by ID without any caching or creation logic.
  */
 export function connectSandbox(sandboxId: string, apiKey: string): Promise<Sandbox> {
-  return Sandbox.connect(sandboxId, { apiKey });
+  return withRetry(() => Sandbox.connect(sandboxId, { apiKey }));
 }
 
 /**
