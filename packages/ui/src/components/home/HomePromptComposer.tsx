@@ -7,14 +7,37 @@ import {
   type ModelSelectorValue,
 } from "../shared/ModelSelector";
 
-export const HomePromptComposer = () => {
+type HomePromptComposerProps = {
+  onSubmit?: (input: {
+    prompt: string;
+    model?: ModelSelectorValue;
+  }) => Promise<void> | void;
+  isSubmitting?: boolean;
+};
+
+export const HomePromptComposer = ({
+  onSubmit,
+  isSubmitting = false,
+}: HomePromptComposerProps) => {
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelSelectorValue>();
 
-  const canSubmit = prompt.trim().length > 0;
+  const canSubmit = prompt.trim().length > 0 && !isSubmitting;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const value = prompt.trim();
+    if (!value || !onSubmit || isSubmitting) {
+      return;
+    }
+
+    try {
+      await onSubmit({ prompt: value, model });
+    } catch {
+      return;
+    }
+
+    setPrompt("");
   };
 
   return (

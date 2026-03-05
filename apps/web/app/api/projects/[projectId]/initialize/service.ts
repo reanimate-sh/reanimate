@@ -49,8 +49,12 @@ async function initGitRepo(sandbox: Sandbox, projectId: string): Promise<void> {
 export async function ensureAgentRunning(sandbox: Sandbox): Promise<void> {
   const needsRestart = await shouldRestartAgent(sandbox);
   if (needsRestart) {
+    const envs = {
+      IDEAVO_MINIMAL_MODE: "1",
+      IDEAVO_API_KEY: ""
+    }
     await updateAgent(sandbox);
-    await startAgent(sandbox);
+    await startAgent(sandbox, envs);
   }
 }
 

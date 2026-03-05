@@ -33,11 +33,11 @@ export interface TemplateConfig {
 
 export const templateConfigs: TemplateConfig[] = [
   {
-    templateName: "reanimate/nextjs-template",
+    templateName: "reanimate-sh/nextjs-tailwind-template",
     description:
-      "Modern Next.js template with Shadcn UI components, TypeScript, and Tailwind CSS.",
+      "This template uses the Next.js App directory, with TailwindCSS",
     projectDependencies: [{ name: "Install Dependencies", command: "bun i" }],
-    runStep: [{ name: "Run Dev Server", command: "bun run dev", port: 4000 }],
+    runStep: [{ name: "Run Dev Server", command: "bun run remotion", port: 4000 }],
     codeChecks: [],
     buildSteps: [{ name: "Build", command: "bun run build" }],
     deploySteps: [{ name: "Start Production Server", command: "bun run start" }],

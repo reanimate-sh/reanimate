@@ -2,6 +2,40 @@ import type { Sandbox } from "e2b";
 import { getHost, runCommand } from "./utils";
 import { AGENT_PORT, PROJECT_PATH } from "./constants";
 
+const REPO_URL = "https://github.com/reanimate-sh/reanimate.git";
+const AGENTS_PATH = "agents/opencode";
+const CLONE_DIR = "/tmp/reanimate-agent";
+
+async function copyAgentFiles(sandbox: Sandbox): Promise<void> {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error("GITHUB_TOKEN is not set");
+
+  const authedUrl = REPO_URL.replace("https://", `https://${token}@`);
+  const CACHE_DIR = "/home/user/.cache/opencode";
+  const CONFIG_DIR = "/home/user/.config/opencode";
+
+  await runCommand(
+    sandbox,
+    [
+      `rm -rf ${CLONE_DIR}`,
+      `git clone --depth=1 --filter=blob:none --sparse ${authedUrl} ${CLONE_DIR}`,
+      `cd ${CLONE_DIR} && git sparse-checkout set ${AGENTS_PATH}`,
+    ].join(" && "),
+    { timeoutMs: 60000 }
+  );
+
+  await runCommand(
+    sandbox,
+    [
+      `mkdir -p ${CACHE_DIR} ${CONFIG_DIR}`,
+      `cp -r ${CLONE_DIR}/${AGENTS_PATH}/skills ${CACHE_DIR}/skills`,
+      `cp -r ${CLONE_DIR}/${AGENTS_PATH}/agents ${CONFIG_DIR}/agents`,
+      `cp ${CLONE_DIR}/${AGENTS_PATH}/opencode.json ${CONFIG_DIR}/opencode.json`,
+      `rm -rf ${CLONE_DIR}`,
+    ].join(" && ")
+  );
+}
+
 export function getAgentUrl(sandbox: Sandbox): Promise<string> {
   return getHost(sandbox, AGENT_PORT);
 }
@@ -16,7 +50,7 @@ export async function startAgent(
   sandbox: Sandbox,
   envs?: Record<string, string>
 ): Promise<void> {
-  await runCommand(sandbox, "opencode serve --port 4095", {
+  await runCommand(sandbox, "ideavo-code serve --port 4095", {
     background: true,
     timeoutMs: 0,
     cwd: PROJECT_PATH,
@@ -40,12 +74,16 @@ export async function updateAgent(
       timeoutMs: 30000,
     }).catch(() => {});
 
-    const result = await runCommand(sandbox, "npm i -g --force opencode-ai", {
+    const result = await runCommand(sandbox, "npm i -g --force ideavo-code", {
       user: "root",
       timeoutMs: 300000,
     });
 
-    if (result.exitCode === 0) return { success: true };
+    await copyAgentFiles(sandbox);
+
+    if (result.exitCode === 0) {
+      return { success: true };
+    }
 
     throw new Error(`Install failed: ${result.stderr || result.stdout}`);
   } catch (error) {
@@ -87,8 +125,8 @@ export async function shouldRestartAgent(
     if (isStreaming) return false;
 
     const [installed, latest] = await Promise.all([
-      runCommand(sandbox, "opencode --version", { timeoutMs: 10000 }),
-      runCommand(sandbox, "npm view opencode-ai version", { timeoutMs: 10000 }),
+      runCommand(sandbox, "ideavo-code --version", { timeoutMs: 10000 }),
+      runCommand(sandbox, "npm view ideavo-code version", { timeoutMs: 10000 }),
     ]);
 
     const normalize = (v: string) => v.replace(/-/g, "");

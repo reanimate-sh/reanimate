@@ -18,6 +18,8 @@ export function OpenCodeApp(props: OpenCodeAppProps) {
           baseUrl={props.baseUrl}
           directory={props.directory}
           fetch={props.fetch}
+          initialPrompt={props.initialPrompt}
+          initialModel={props.initialModel}
         >
           <Layout className={props.className} />
         </OpenCodeProvider>

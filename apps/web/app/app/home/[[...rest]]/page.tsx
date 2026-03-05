@@ -1,14 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
-import { useQuery } from "convex/react";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { HomePromptComposer } from "@reanimate/ui/components/home/HomePromptComposer";
 import { AppBackground } from "@/components/AppBackground";
 import { AppHeader } from "@/features/app/components/AppHeader";
 import { api } from "@/lib/convexApi";
 
 export default function HomePage() {
+  const router = useRouter();
   const user = useQuery(api.users.current, {});
+  const createProject = useMutation(api.projects.create);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const firstName = useMemo(() => {
     const name = user?.name?.trim();
@@ -22,6 +27,40 @@ export default function HomePage() {
   const headline = firstName
     ? `What are we creating today, ${firstName}?`
     : "What are we creating today?";
+
+  const handleSubmit = async ({
+    prompt,
+    model,
+  }: {
+    prompt: string;
+    model?: { providerID: string; modelID: string };
+  }) => {
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const project = await createProject({
+        title: "Untitled",
+        metadata: {},
+      });
+
+      if (!project?._id) {
+        throw new Error("Project creation failed.");
+      }
+
+      const params = new URLSearchParams({ prompt });
+      if (model) {
+        params.set("providerID", model.providerID);
+        params.set("modelID", model.modelID);
+      }
+      router.push(`/app/project/${project._id}?${params.toString()}`);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Could not create project.");
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-[#0a0e18] text-white selection:bg-blue-500/30">
@@ -40,8 +79,11 @@ export default function HomePage() {
             </p>
 
             <div className="mt-8 sm:mt-10">
-              <HomePromptComposer />
+              <HomePromptComposer onSubmit={handleSubmit} isSubmitting={isSubmitting} />
             </div>
+            {submitError && (
+              <p className="mt-3 text-sm text-rose-300">{submitError}</p>
+            )}
           </section>
         </main>
       </div>

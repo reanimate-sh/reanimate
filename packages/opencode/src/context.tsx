@@ -41,6 +41,8 @@ type OpenCodeProviderProps = PropsWithChildren<{
   baseUrl: string;
   directory: string;
   fetch?: typeof fetch;
+  initialPrompt?: string;
+  initialModel?: ModelRef;
 }>;
 
 type OpenCodeContextValue = {
@@ -258,6 +260,7 @@ export function OpenCodeProvider(props: OpenCodeProviderProps) {
   const stateRef = useRef(state);
   const loadingSessionsRef = useRef(new Set<string>());
   const generationRef = useRef(0);
+  const sentInitialPromptRef = useRef(false);
 
   useEffect(() => {
     stateRef.current = state;
@@ -370,6 +373,7 @@ export function OpenCodeProvider(props: OpenCodeProviderProps) {
 
   useEffect(() => {
     setState(createInitialState(props.directory));
+    sentInitialPromptRef.current = false;
     void bootstrap();
   }, [bootstrap, props.directory]);
 
@@ -778,6 +782,45 @@ export function OpenCodeProvider(props: OpenCodeProviderProps) {
       }
     };
   }, [bootstrap, directoryClient, loadSessionMessages]);
+
+  useEffect(() => {
+    const prompt = props.initialPrompt?.trim();
+    if (!prompt || sentInitialPromptRef.current) {
+      return;
+    }
+    if (
+      state.status !== "ready" ||
+      !state.selectedModel ||
+      !state.selectedAgent
+    ) {
+      return;
+    }
+
+    const initialModel = props.initialModel;
+    const shouldSwitchModel =
+      initialModel &&
+      modelExists(state.modelOptions, initialModel) &&
+      (state.selectedModel.providerID !== initialModel.providerID ||
+        state.selectedModel.modelID !== initialModel.modelID);
+
+    if (shouldSwitchModel) {
+      actions.setSelectedModel(initialModel);
+      return;
+    }
+
+    sentInitialPromptRef.current = true;
+    void actions.sendPrompt({ text: prompt }).catch(() => {
+      sentInitialPromptRef.current = false;
+    });
+  }, [
+    actions,
+    props.initialModel,
+    props.initialPrompt,
+    state.modelOptions,
+    state.selectedAgent,
+    state.selectedModel,
+    state.status
+  ]);
 
   const value = useMemo<OpenCodeContextValue>(
     () => ({
